@@ -31,7 +31,8 @@ const cashflowSubCategorySchema = new Schema(
 );
 const cashflowSchema = new Schema(
   {
-    kind: { type: String, enum: ["Ingreso", "Egreso", "Giro"], required: true },
+    detail: String,
+    date: Date,
     category: {
       _id: { type: Types.ObjectId, ref: "CashflowCategory" },
       name: String,
@@ -40,8 +41,6 @@ const cashflowSchema = new Schema(
       _id: { type: Types.ObjectId, ref: "CashflowSubCategory" },
       name: String,
     },
-    detail: String,
-    date: Date,
     full_date: { day: Number, month: Number, week: Number, year: Number },
     company_id: { type: Types.ObjectId, ref: "Company" },
     store_id: { type: Types.ObjectId, ref: "Store" },

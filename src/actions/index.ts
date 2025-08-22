@@ -26,7 +26,6 @@ import * as service from "./service";
 import * as store from "./store";
 import * as subscriptionPlan from "./subscription-plan";
 import * as subscription from "./subscription";
-import * as template from "./template";
 import * as tutorial from "./tutorial";
 import * as user from "./user";
 import * as vehicleKind from "./vehicle-kind";
@@ -54,7 +53,6 @@ const ACTIONS = {
   store,
   "subscription-plan": subscriptionPlan,
   subscription,
-  template,
   tutorial,
   user,
   "vehicle-kind": vehicleKind,
@@ -87,7 +85,6 @@ export const API_ROUTER = async (
     if (
       action === "upsert" &&
       entity !== "company" &&
-      entity !== "brand" &&
       user.email !== "mgesualdo14@gmail.com" &&
       user.email !== "ignaciogesualdo@gmail.com"
     ) {

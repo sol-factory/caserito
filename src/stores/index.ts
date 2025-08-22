@@ -8,7 +8,6 @@ export type StateStore = typeof EMPTY_ENTITIES & {
   current_company: any;
   login: { email: string; code: string };
   filter: { date: string };
-  subscription: { stores: number; plan_id: string };
   tutorial: { videoId: string };
   errors: any;
   initialization: any;

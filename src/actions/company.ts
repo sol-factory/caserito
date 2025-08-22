@@ -1,28 +1,20 @@
 import { revalidatePath } from "next/cache";
-import { upsertBlob } from "@/helpers/blobs";
 import CompanyModel from "@/schemas/company";
 import StoreModel from "@/schemas/store";
 import { MemberModel } from "@/schemas/member";
 import { createJWTandSession, generateTokenPayload } from "@/helpers/auth";
 import RoleModel from "@/schemas/role";
-import TemplateModel from "@/schemas/template";
 import { cleanRegExp, cleanText } from "@/helpers/text";
 import WalletModel from "@/schemas/wallet";
 import { UserModel } from "@/schemas/user";
 import {
   abortTransaction,
   commitTransaction,
-  getAquappExchangeRate,
   startTransaction,
 } from "@/helpers/mdb";
-import DiscountModel from "@/schemas/discount";
-import { genTemplatePlaceholder } from "@/helpers/ui";
-import { CONFIG, COUNTRIES } from "@/config/constanst";
 import { getFullDate } from "@/helpers/date";
 import { headers } from "next/headers";
-import EventModel from "@/schemas/event";
 import { addDays } from "date-fns";
-import VehicleKindModel from "@/schemas/vehicle-kind";
 
 export const upsert = async ({ data, form }, user) => {
   const { _id, country, formatted_number, phone } = data;
@@ -63,38 +55,16 @@ export const upsert = async ({ data, form }, user) => {
   try {
     const userDB = await UserModel.findOne({ email: user.email });
     if (!_id) {
-      const firstEvent = await EventModel.findOne({
-        ip,
-      });
-      const sawCompTutorial = await EventModel.exists({
-        name: "Tutorial paso 1",
-        ip,
-      });
-      const sawIntro = await EventModel.exists({
-        name: "Introducción Aquapp",
-        ip,
-      });
-      const tutorials_clicked = [];
-      if (sawIntro) {
-        tutorials_clicked.push(1);
-      }
-      if (sawCompTutorial) {
-        tutorials_clicked.push(2);
-      }
-      const province = data.province?.replace("Provincia de ", "");
       const newCompany = new CompanyModel({
         ...data,
         phone: companyPhone,
         creator: userDB.getBasicInfo(),
         country: country.code,
         city: data.city,
-        province,
         lat: data.lat,
         lng: data.lng,
         full_creation_date: getFullDate(),
         created_from_ip: ip,
-        "statistics.tutorials_clicked": tutorials_clicked,
-        origin_event_name: firstEvent?.name,
         search_field: cleanText(`${data.name} ${phone} ${userDB.email}`),
       });
 
@@ -106,19 +76,12 @@ export const upsert = async ({ data, form }, user) => {
 
       blob_id = company._id;
 
-      const fullCountryData = COUNTRIES.find(
-        (c) => c.code === data.country_code
-      );
-
-      const aquapp_rate = await getAquappExchangeRate(new Date());
-
-      const currency = fullCountryData?.currency_code?.toLowerCase();
+      const aquapp_rate = 1;
 
       const newStore = new StoreModel({
         name: data.address,
         address: data.address,
         city: data.city,
-        province,
         country: data.country_name,
         country_code: data.country_code,
         location: {
@@ -127,120 +90,11 @@ export const upsert = async ({ data, form }, user) => {
         },
         lat: data.lat,
         lng: data.lng,
-        currency,
         usd_exchange_rate: aquapp_rate,
-        country_flag: fullCountryData.flag,
         company_id: company._id,
         activated: true,
       });
       store = await newStore.save({ session });
-
-      await VehicleKindModel.insertMany(
-        [
-          {
-            company_id: company._id,
-            name: "Moto",
-            classification_id: "motoneta",
-            deleted: false,
-          },
-          {
-            company_id: company._id,
-            name: "Auto",
-            classification_id: "auto-chico",
-            deleted: false,
-          },
-          {
-            company_id: company._id,
-            name: "SUV",
-            classification_id: "suv",
-            deleted: false,
-          },
-          {
-            company_id: company._id,
-            name: "Camioneta",
-            classification_id: "pick-up",
-            deleted: false,
-          },
-        ],
-        { session }
-      );
-
-      // Creamos templates de WHATSAPP
-      const clientNamePlaceholder =
-        genTemplatePlaceholder("Nombre del cliente");
-      const vehicleDataPlaceholder =
-        genTemplatePlaceholder("Datos del vehículo");
-      const saleDatePlaceholder = genTemplatePlaceholder("Fecha de la venta");
-
-      const companyNamePlaceholder = genTemplatePlaceholder(
-        "Nombre de la empresa"
-      );
-
-      const saleDetailPlaceholder = genTemplatePlaceholder(
-        "Detalle de la venta"
-      );
-
-      await TemplateModel.insertMany(
-        [
-          {
-            of: "Whatsapp",
-            name: "Iniciar conversación",
-            content: `Hola *${clientNamePlaceholder}*,  `,
-            company_id: company._id,
-            stores: [store],
-            screens: [
-              CONFIG.screens.sales,
-              CONFIG.screens.clients,
-              CONFIG.screens.members,
-            ],
-          },
-          {
-            of: "Whatsapp",
-            name: "Retirar vehículo",
-            content: `Hola *${clientNamePlaceholder}*, queríamos avisarte que tu vehículo ${vehicleDataPlaceholder} ya está listo para ser retirado 🚗✨<br>
-*Detalle de tu ticket*:<br>${saleDetailPlaceholder}<br>Te esperamos, *${companyNamePlaceholder}* 🙋🏻‍♂️`,
-            company_id: company._id,
-            stores: [store],
-            screens: [CONFIG.screens.sales],
-            locked: true,
-          },
-          {
-            of: "Whatsapp",
-            name: "Recordatorio turno",
-            content: `Hola *${clientNamePlaceholder}*, recordá que ${saleDatePlaceholder} tenés turno para traer tu ${vehicleDataPlaceholder}.<br>
-*Detalle de tu ticket*:<br>${saleDetailPlaceholder}<br>Te esperamos, *${companyNamePlaceholder}* 🙋🏻‍♂️`,
-            company_id: company._id,
-            stores: [store],
-            screens: [CONFIG.screens.sales],
-            locked: true,
-          },
-          {
-            of: "Whatsapp",
-            name: "Descuento cumpleaños",
-            content: `🎉✨ ¡Feliz mes de tu cumpleaños, *${clientNamePlaceholder}*! 🎂🥳<br>
-¡Tienes un 15% en este mes por tu cumple!<br>
-En *${companyNamePlaceholder}*, queremos celebrarlo contigo. Por eso, te regalamos un 15% de descuento en tu próximo servicio durante este mes especial. 🚗💦<br>
-👉 Para aprovechar este beneficio, ven a nuestro local o escríbenos respondiendo a este mensaje.<br>
-¡Te esperamos para que empieces tu nuevo año con un auto impecable! 🎁`,
-            company_id: company._id,
-            stores: [store],
-            screens: [CONFIG.screens.clients],
-            locked: true,
-          },
-          {
-            of: "Whatsapp",
-            name: "Enviar presupuesto",
-            content: `Hola *${clientNamePlaceholder}*, tal como acordamos acá te envío la cotización en PDF.<br>
-Cualquier duda que tengas avisame y lo vemos 🙋🏻‍♂️.
-`,
-            company_id: company._id,
-            stores: [store],
-            screens: [CONFIG.screens.quotes],
-            locked: true,
-          },
-        ],
-        { session }
-      );
 
       // Creamos Wallet y le asignamos la store inicial
       await WalletModel.insertMany(
@@ -248,39 +102,12 @@ Cualquier duda que tengas avisame y lo vemos 🙋🏻‍♂️.
           {
             name: "Efectivo",
             company_id: company._id,
-            currency,
-            stores: [store],
-          },
-          {
-            name: "Efectivo",
-            company_id: company._id,
-            currency: "usd",
+            currency: "ars",
             stores: [store],
           },
         ],
         { session }
       );
-
-      // Insertamos un descuento por cumpleaños a modo de ejemplo
-      const discount = new DiscountModel({
-        name: "Cumpleaños",
-        kind: "%",
-        value: 15,
-        stores: [store],
-        company_id: company._id,
-        locked: true,
-      });
-      await discount.save({ session });
-      const variableDiscount = new DiscountModel({
-        name: "De monto variable",
-        kind: "$",
-        value: 0,
-        stores: [store],
-        company_id: company._id,
-        locked: true,
-      });
-      await discount.save({ session });
-      await variableDiscount.save({ session });
     } else {
       company = await CompanyModel.findByIdAndUpdate(
         _id,
@@ -303,16 +130,6 @@ Cualquier duda que tengas avisame y lo vemos 🙋🏻‍♂️.
       country: company.country,
       createdAt: company.createdAt,
     };
-
-    if (logo?.size > 0) {
-      url = await upsertBlob(logo, `/companies/${blob_id}`, true);
-      company = await CompanyModel.findByIdAndUpdate(
-        company._id,
-        { logo_url: url },
-        { new: true, session }
-      );
-      companyInfo["logo_url"] = url;
-    }
 
     let member;
     if (!_id) {

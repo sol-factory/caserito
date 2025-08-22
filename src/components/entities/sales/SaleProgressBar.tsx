@@ -14,15 +14,12 @@ export const SaleProgressBar = ({
 }) => {
   const { getFlag } = useFlags();
   const amountField = currency === "usd" ? "usd_amount" : "amount";
-  const discountsAmountField =
-    currency == "usd" ? "usd_discounts_amount" : "discounts_amount";
   const gatheredAmountField =
     currency === "usd" ? "usd_gathered_amount" : "gathered_amount";
 
-  const netAmount = s[amountField] - s[discountsAmountField];
+  const netAmount = s[amountField];
   if (netAmount <= 0) return null;
 
-  const discounts = s.discounts.filter((d) => d.currency === currency);
   const extraPayment = s[gatheredAmountField] - netAmount;
   const currencySign = currency === "usd" ? "u$s" : "$";
   return (
@@ -52,19 +49,6 @@ export const SaleProgressBar = ({
                 src={`${CONFIG.blob_url}/money.png`}
                 alt="Logo de pagos extras"
                 className="min-w-3 w-3 h-3"
-                width={10}
-                height={10}
-              />
-            </div>
-          )}
-          {discounts.length > 0 && (
-            <div
-              title={toMoney(s[discountsAmountField], false, false, currency)}
-            >
-              <Image
-                className="min-w-3 w-3 h-3"
-                src={`${CONFIG.blob_url}/discount.png`}
-                alt="Logo de descuento"
                 width={10}
                 height={10}
               />

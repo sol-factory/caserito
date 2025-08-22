@@ -31,7 +31,7 @@ export default function ToogleCashflowKind({
           update(form, {
             [field]: newValue,
             category: isIncome
-              ? { _id: "686ce917911c30f343ca8a46", name: "Cobro" }
+              ? { _id: "68a8898ff3ab70f6105fe631", name: "Venta" }
               : {},
             sub_category: {},
             wallet: {},

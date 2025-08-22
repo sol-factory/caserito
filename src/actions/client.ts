@@ -17,31 +17,19 @@ import { CONFIG } from "@/config/constanst";
 export const upsert = async ({ data }, user) => {
   const {
     _id,
+    name,
     kind,
-    firstname,
-    lastname,
     email,
     phone,
     country,
     address,
     fiscal_id,
     formatted_number,
-    dob,
-    brand,
-    model,
-    patent,
-    vehicle_kind,
-    insurance,
   } = data;
 
-  const lowerCasePatent = patent?.toLowerCase().replace(/\s+/g, "") || "";
-
-  const isPerson = kind === "person";
-  const fullname = isPerson ? `${firstname} ${lastname}` : firstname;
   const client_data = {
     kind,
-    firstname,
-    lastname: isPerson ? lastname : "",
+    name,
     email,
     address,
     fiscal_id,
@@ -65,39 +53,18 @@ export const upsert = async ({ data }, user) => {
       formatted_number,
       phone,
     },
-    dob: dob.day
-      ? { ...dob, date: new Date(dob.year, dob.month - 1, dob.day) }
-      : undefined,
+
     company_id: user.company._id,
-    search_field: cleanText(
-      `${fullname} ${email} ${phone} ${lowerCasePatent || ""}`
-    ),
-    patents: !!lowerCasePatent ? [lowerCasePatent] : [],
+    search_field: cleanText(`${name} ${email} ${phone}`),
   };
 
-  let createdClient, createdVehicle;
+  let createdClient;
   const session = await startTransaction();
   try {
     if (!_id) {
       const newUser = new ClientModel(client_data);
       createdClient = await newUser.save({ session });
-      const vehicle_data = {
-        client: newUser.getBasicInfo(),
-        client_id: newUser._id,
-        company_id: user.company._id,
-        kind: vehicle_kind,
-        insurance,
-        brand: {
-          _id: brand._id,
-          name: brand.name,
-          blob_path: `/brands/${toSlug(brand.name)}.png`,
-        },
-        model,
-        patent,
-        search_field: cleanText(`${brand.name} ${model} ${patent}`),
-      };
-      const newVehicle = new VehicleModel(vehicle_data);
-      createdVehicle = await newVehicle.save({ session });
+
       await CompanyModel.findByIdAndUpdate(
         user.company._id,
         {
@@ -124,11 +91,6 @@ export const upsert = async ({ data }, user) => {
         { $set: { client: updatedClient.getBasicInfo() } },
         { session }
       );
-      await QuoteModel.updateMany(
-        { client_id: updatedClient._id, sent: false },
-        { $set: { client: updatedClient.getBasicInfo() } },
-        { session }
-      );
     }
 
     revalidatePath("/clients");
@@ -141,7 +103,6 @@ export const upsert = async ({ data }, user) => {
             lat: data.lat,
             lng: data.lng,
             createdClientId: createdClient._id.toString(),
-            createdVehicleId: createdVehicle._id.toString(),
           }
         : undefined,
     };
@@ -210,10 +171,7 @@ export const getItems = async (
   pipeline.push({
     $project: {
       _id: { $toString: "$_id" },
-      name: { $concat: ["$firstname", " ", "$lastname"] },
-      lat: { $arrayElemAt: ["$address.location.coordinates", 1] },
-      lng: { $arrayElemAt: ["$address.location.coordinates", 0] },
-      value: "$sales.count",
+      name: 1,
       detail: "$email",
       icon: "$kind",
       category: 1,
@@ -221,12 +179,7 @@ export const getItems = async (
   });
   const clients = await ClientModel.aggregate(pipeline);
 
-  return clients.map((c) => ({
-    ...c,
-    after_name: c.category
-      ? `${CONFIG.blob_url}/clients/${c.category}${c.category === "gold" ? "2" : ""}.png`
-      : null,
-  }));
+  return clients;
 };
 
 export const recalculateSales = async (_id) => {

@@ -29,8 +29,6 @@ import { calculatePrices } from "./subscription";
 import StoreModel from "@/schemas/store";
 import ExchangeModel from "@/schemas/exchange";
 import { isTomorrowOrMore } from "./currency";
-import { CashflowModel } from "@/schemas/cashflow";
-import ServiceModel from "@/schemas/service";
 
 export const addCurrencyToArray = async () => {
   const items = await QuoteModel.find({ "services.currency": null });
@@ -139,25 +137,17 @@ export const getAvgExchangeRateForPeriod = async (
 };
 
 export const getSaleMetadata = async (sale, user) => {
-  const client = await ClientModel.findById(sale.client._id);
-  const vehicle = await VehicleModel.findById(sale.vehicle._id);
-
   const date = getUserDate(user, sale.date);
 
   const pick_up_date = sale.pick_up_date
     ? getUserDate(user, sale.pick_up_date)
     : undefined;
-  const clientBasicInfo = client.getBasicInfo();
-  const vehicleBasicInfo = vehicle.getBasicInfo();
 
   return {
     date,
     full_date: getFullDate(date),
     pick_up_date,
     full_pick_up_date: pick_up_date ? getFullDate(pick_up_date) : null,
-    client: clientBasicInfo,
-    vehicle: vehicleBasicInfo,
-    search_field: cleanText(`${client.search_field} ${vehicle.search_field}`),
   };
 };
 export const getQuoteMetadata = async (quote, user) => {

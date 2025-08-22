@@ -16,7 +16,6 @@ import ExpirationBanner from "@/components/custom-ui/ExpirationBanner";
 import { getRemainingDays } from "@/helpers/subscription";
 import CompanyModel from "@/schemas/company";
 import { toObjectId } from "@/helpers/mdb";
-import { MyTutorialDialog } from "@/components/custom-ui/MyTutorialDialog";
 import { DatePickerRange } from "@/components/custom-ui/DatePickerRange";
 import { SocketProvider } from "@/components/entities/templates/SocketProvider";
 import { ClickOutsideWrapper } from "@/components/custom-ui/ClickOutsideWrapper";
@@ -227,7 +226,6 @@ export default async function AppLayout({ children }) {
                   style={{ scrollbarWidth: "none" }}
                 >
                   {children}
-                  <MyTutorialDialog />
                   <DeleteDialog />
                   <MyFormDialog
                     form="attachment"

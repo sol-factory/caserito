@@ -125,7 +125,7 @@ export const VK_fixedOrder = [
 ];
 
 export const CONFIG = {
-  blob_url: "https://7jwlofbzaq4pzktn.public.blob.vercel-storage.com",
+  blob_url: "https://qbs5samke2sj0bbb.public.blob.vercel-storage.com",
   azure_blob_url: "https://aquapp.blob.core.windows.net",
   paypalBaseApiUrl: "https://api-m.paypal.com",
   paypal: {

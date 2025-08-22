@@ -73,13 +73,6 @@ const SaleRow = ({
       companyName={companyName}
       colorAllowed={colorAllowed}
       rowItemsCount={rowItemsCount}
-      style={{
-        borderLeft: colorAllowed && s.color ? `2px solid ${s.color}` : "",
-        paddingLeft: colorAllowed && s.color ? "0.5rem" : "",
-        borderTopLeftRadius: colorAllowed && s.color ? "0.2rem" : "",
-        borderBottomLeftRadius: colorAllowed && s.color ? "0.2rem" : "",
-      }}
-      className={`${s.taken_away ? "bg-gray-100" : s.finished ? "bg-green-50" : ""}`}
     >
       <div
         key={s._id}
@@ -87,37 +80,9 @@ const SaleRow = ({
       >
         <div className="w-48">
           <div className="flex flex-col">
-            <ClientName client={s.client} />
-            <div className="md:hidden w-40 text-xs flex flex-col mb-1">
-              <div className="flex items-center gap-1.5">
-                <Image
-                  src={`${CONFIG.blob_url}/brands/${toSlug(s.vehicle.brand)}.png`}
-                  width={18}
-                  height={18}
-                  alt="Image"
-                />
+            <span>{s.category.name}</span>
+            <span>{s.sub_category.name}</span>
 
-                <span className={`font-normal`}>{s.vehicle.model}</span>
-                <span className="font-normal text-blue-600">
-                  {s.vehicle.patent.toUpperCase()}
-                </span>
-              </div>
-              {s.vehicle.insurance_id && (
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <Image
-                    src={`${CONFIG.blob_url}/institutions/${toSlug(s.vehicle.insurance_id)}.png`}
-                    width={18}
-                    height={18}
-                    alt="Image"
-                  />
-
-                  <span className={`font-normal`}>
-                    {s.vehicle.insurance_name}
-                  </span>
-                </div>
-              )}
-            </div>
-            {s.lat && <SaleAddress s={s} />}
             <div className="flex items-center gap-2 text-blue-600">
               <div
                 className="flex items-center gap-1.5"
@@ -146,84 +111,6 @@ const SaleRow = ({
                 </span>
               </div>
             </div>
-            {!s.finished && trackServicesTime && (
-              <span className="font-extralight text-muted-foreground text-[0.6rem] -mt-1 inline-block">
-                Ingresó hace{" "}
-                <span className="text-orange-600">{timeAgo(sale_date)}</span>
-              </span>
-            )}
-            {s.finished && (
-              <div className="flex items-center gap-2 text-green-600 -mt-1">
-                <div
-                  className="flex items-center gap-1.5"
-                  title="Fecha y hora de finalización de tratamiento"
-                >
-                  <Image
-                    src={`${CONFIG.blob_url}/race.png`}
-                    className="w-[0.65rem] h-[0.65rem] mx-0.5"
-                    width={14}
-                    height={14}
-                    alt="Image"
-                  />
-
-                  <span className=" text-[0.7rem] text-gray-600 font-extralight text-nowrap">
-                    {format(
-                      s.finished_at,
-                      isCurrentYear ? "EE d/MM" : "EE d/MM/yy",
-                      {
-                        locale: es,
-                      }
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center gap-0.5">
-                  <Clock
-                    size={12}
-                    strokeWidth={1}
-                    className="w-[0.68rem] h-[0.68rem]"
-                  />
-                  <span className=" text-[0.7rem] font-extralight">
-                    {format(s.finished_at, "H:mm", { locale: es })}
-                  </span>
-                </div>
-              </div>
-            )}
-            {s.taken_away && (
-              <div className="flex items-center gap-2 text-gray-700 -mt-1">
-                <div
-                  className="flex items-center gap-1.5"
-                  title="Fecha y hora de finalización de tratamiento"
-                >
-                  <Image
-                    src={`${CONFIG.blob_url}/keys-6iGprFHBksy8CdBbVEkYbEnYjZd9yr.png`}
-                    className="w-[0.65rem] h-[0.65rem] mx-0.5 scale-x-[-1]"
-                    width={14}
-                    height={14}
-                    alt="Image"
-                  />
-
-                  <span className=" text-[0.7rem] text-gray-700 font-extralight text-nowrap">
-                    {format(
-                      s.taken_away_at,
-                      isCurrentYear ? "EE d/MM" : "EE d/MM/yy",
-                      {
-                        locale: es,
-                      }
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center gap-0.5">
-                  <Clock
-                    size={12}
-                    strokeWidth={1}
-                    className="w-[0.68rem] h-[0.68rem]"
-                  />
-                  <span className=" text-[0.7rem] font-extralight text-gray-700">
-                    {format(s.taken_away_at, "H:mm", { locale: es })}
-                  </span>
-                </div>
-              </div>
-            )}
             {pick_up_date && pickUpDateAllowed && (
               <div
                 className="flex items-center gap-2 text-red-600 -mt-1"
@@ -254,17 +141,6 @@ const SaleRow = ({
               </div>
             )}
             <div className="flex items-center gap-1 mt-[3px]">
-              {!!s.quote_identifier && (
-                <div title={`Presupuesto: ${s.quote_identifier}`}>
-                  <Image
-                    src={`${CONFIG.blob_url}/pdf2.png`}
-                    alt="Logo de pagos extras"
-                    width={14}
-                    height={14}
-                  />
-                </div>
-              )}
-
               {s.comments?.length > 0 && (
                 <div className="flex items-center gap-[2px]">
                   <MessageCircle
@@ -309,86 +185,15 @@ const SaleRow = ({
             </div>
           </div>
         </div>
-        <div className="sm:w-40 hidden md:flex md:flex-col">
-          <div className="flex items-center gap-1">
-            <Image
-              src={`${CONFIG.blob_url}/brands/${toSlug(s.vehicle.brand)}.png`}
-              width={18}
-              height={18}
-              alt="Image"
-            />
-
-            <span className="font-medium ">{s.vehicle.model}</span>
-          </div>
-          {s.vehicle.patent && (
-            <div className="flex items-center gap-1 mt-0.5">
-              <IdCard className="w-[1.1rem] h-[1.1rem]" strokeWidth={0.8} />
-              <span className="font-extralight text-blue-600">
-                {s.vehicle.patent.toUpperCase()}
-              </span>
-            </div>
-          )}
-          {s.vehicle.insurance_id && (
-            <div className="flex items-center gap-1 mt-0.5">
-              <Image
-                src={`${CONFIG.blob_url}/institutions/${toSlug(s.vehicle.insurance_id)}.png`}
-                width={18}
-                height={18}
-                alt="Image"
-              />
-
-              <span className={`font-normal`}>{s.vehicle.insurance_name}</span>
-            </div>
-          )}
-        </div>
         <div className="w-full sm:w-48 sm:pr-16">
-          {can_view_amount_sale && (
-            <div className="flex flex-col items-end">
-              <SaleProgressBar
-                s={s}
-                currency="ars"
-                showFlags={multiCurrency}
-                showAmount
-                className="flex-col gap-0 mb-3 items-end"
-              />
-              <SaleProgressBar
-                s={s}
-                currency="usd"
-                showFlags={multiCurrency}
-                showAmount
-                className="flex-col gap-0 items-end"
-              />
-            </div>
-          )}
-        </div>
-        <div className="gap-1 hidden w-48  sm:flex sm:flex-col">
-          <div>
-            {s.services.map((ss) => (
-              <div key={ss._id} className="flex items-center gap-2">
-                <div>
-                  <Bell className="w-4 h-4" strokeWidth={1} />{" "}
-                </div>
-                <span className="text-nowrap truncate max-w-40" translate="no">
-                  {capitalizeFirstLetter(ss.name)}{" "}
-                </span>
-                {ss.allow_quantity && (
-                  <span className="text-blue-600 font-light text-xs ml-1">
-                    ({ss.quantity})
-                  </span>
-                )}
-                {ss.description && (
-                  <MyInfoTooltip
-                    text={`Detalle`}
-                    id={`${ss._id}-tooltip-${s._id}`}
-                    className="py-2"
-                  >
-                    {ss.description}
-                  </MyInfoTooltip>
-                )}
-              </div>
-            ))}
+          <div className="flex flex-col items-end">
+            <SaleProgressBar
+              s={s}
+              currency="ars"
+              showAmount
+              className="flex-col gap-0 mb-3 items-end"
+            />
           </div>
-          {(isOwner || isManager) && <Workers workers={s.workers} />}
         </div>
       </div>
     </DropdownRow>

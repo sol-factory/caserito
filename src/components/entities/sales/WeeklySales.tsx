@@ -30,18 +30,6 @@ const WeeklySales = ({ weekSales, staying_cars, date, companyName }) => {
               (s) => s.full_date.day === day.getDate()
             );
 
-            const dayStayingCars = staying_cars.filter(
-              (sc) =>
-                sc.full_date?.day !== day.getDate() &&
-                sc.date < day &&
-                endOfDay(sc.pick_up_date) >= endOfDay(day)
-            );
-
-            const servicesCount = daySales.reduce(
-              (acc, s) => acc + s.services.length,
-              0
-            );
-
             return (
               <div
                 className="flex flex-col items-center max-h-[60rem] !overflow-x-visible"
@@ -62,14 +50,6 @@ const WeeklySales = ({ weekSales, staying_cars, date, companyName }) => {
                       {format(day, "MMMM", { locale: es })}
                     </span>
                   </div>
-
-                  <WeeklyDayWorkload
-                    day={day}
-                    store={store}
-                    daySales={daySales}
-                    dayStayingCars={dayStayingCars}
-                    servicesCount={servicesCount}
-                  />
                 </div>
                 <div
                   className={`flex flex-col w-[7rem] justify-start gap-0.5 !overflow-y-scroll overflow-x-visible no-scrollbar  !max-h-[50rem] ${daySales.length <= 2 ? "pb-[4rem]" : "pb-[15rem]"}`}
@@ -82,25 +62,6 @@ const WeeklySales = ({ weekSales, staying_cars, date, companyName }) => {
                       day={day.getDate()}
                     />
                   ))}
-                  {show_cars &&
-                    dayStayingCars.map((s, index) => {
-                      const full_pick_up_date = s.pick_up_date
-                        ? getFullDate(s.pick_up_date)
-                        : null;
-                      return (
-                        <WeeklySale
-                          key={index}
-                          s={s}
-                          companyName={companyName}
-                          isStayingCar
-                          day={day.getDate()}
-                          isLeaving={
-                            full_pick_up_date?.day === day.getDate() &&
-                            full_pick_up_date?.month === day.getMonth() + 1
-                          }
-                        />
-                      );
-                    })}
                 </div>
               </div>
             );

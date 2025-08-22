@@ -13,14 +13,6 @@ const SecondaryCashflowForm = ({ user, creating, canUpdate, canCreate }) => {
   const { getFlag } = useFlags();
   return (
     <>
-      <ToogleCashflowKind
-        form="cashflow"
-        field="kind"
-        value1="egress"
-        value2="income"
-        disabled={!creating}
-      />
-
       <DatePicker
         id="cashflow-date-picker"
         entity="cashflow"
@@ -30,43 +22,7 @@ const SecondaryCashflowForm = ({ user, creating, canUpdate, canCreate }) => {
         toDate={user.email === "mgesualdo14@gmail.com" ? undefined : new Date()}
         // toDate={addDays(new Date(), 6)}
       />
-      <div className="flex items-center gap-2">
-        <MultiSelect
-          id="select-category"
-          form="cashflow"
-          field="category"
-          entity="cashflow"
-          placeholder="Categoría"
-          action="getCategories"
-          flag="kind"
-          justOne
-          autoFocus
-          hideSearch
-          className="min-w-20"
-          idToFocusAfterSelection="select-sub-category"
-          resetOnSelect="sub_category"
-          disabled={!canUpdate && !canCreate}
-        />
-        <MultiSelect
-          id="select-sub-category"
-          form="cashflow"
-          field="sub_category"
-          entity="cashflow"
-          action="getSubCategories"
-          filterIdField="category"
-          placeholder="Subcategoría"
-          idToFocusAfterSelection={(newValue) =>
-            ["Venta de productos", "Membresías"].includes(newValue.name)
-              ? "cashflow-client"
-              : "select-wallet"
-          }
-          monitorField="category"
-          shouldHide={(category) => category?.name === "Retiro"}
-          justOne
-          autoFocus
-          disabled={!canUpdate && !canCreate}
-        />
-      </div>
+
       <MultiSelect
         id="cashflow-client"
         entity="client"

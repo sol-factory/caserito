@@ -8,9 +8,6 @@ import { verifySession } from "@/helpers/auth";
 import { getBooleanRoles } from "@/helpers/permissions";
 import {
   addToSummary,
-  getAquappExchangeRate,
-  getAvgExchangeRateForPeriod,
-  getFullDateFilter,
   getSalesReports,
   getWorkplace,
   initSummary,
@@ -34,9 +31,7 @@ import {
 } from "date-fns";
 import StoreModel from "@/schemas/store";
 import WeeklySales from "@/components/entities/sales/WeeklySales";
-import ViewDropdown from "@/components/entities/sales/ViewDropdown";
 import DebtReport from "@/components/entities/reports/DebtReport";
-import { MemberModel } from "@/schemas/member";
 import WorkersWage from "@/components/entities/reports/WorkersWage";
 import { TotalAmount } from "@/components/entities/reports/TotalAmount";
 import { addUUIDtoFields } from "@/helpers/arrays";
@@ -71,20 +66,6 @@ export default async function Sales({ searchParams }) {
     view === "daily" ||
     (!untaken && !client_id && !search && !debtsView && !unfinished && !weekly);
 
-  const counts = {
-    unfinished: await SaleModel.countDocuments({
-      ...matchStage,
-      date: { $lte: endOfDay(new Date()) },
-      finished: false,
-      taken_away: false,
-    }),
-    untaken: await SaleModel.countDocuments({
-      ...matchStage,
-      date: { $lte: endOfDay(new Date()) },
-      taken_away: false,
-    }),
-  };
-
   const periodFilter = getPeriodFilter(period);
 
   const finalDate =
@@ -96,13 +77,7 @@ export default async function Sales({ searchParams }) {
   weekStart.setHours(5);
   const weekEnd = endOfWeek(finalDate, { weekStartsOn: 1 });
 
-  let aquapp_rate;
-
   if (weekly) {
-    aquapp_rate = await getAvgExchangeRateForPeriod(
-      null,
-      getFullDateFilter(finalDate, "week")
-    );
     dateFilters = {
       $and: [{ date: { $gte: weekStart } }, { date: { $lte: weekEnd } }],
     };
@@ -110,28 +85,10 @@ export default async function Sales({ searchParams }) {
     sortOrders = { date: 1 };
   }
   if (daily) {
-    aquapp_rate = await getAquappExchangeRate(finalDate);
     dateFilters = {
       "full_date.day": dateToFilter.getUTCDate(),
       "full_date.month": dateToFilter.getUTCMonth() + 1,
       "full_date.year": dateToFilter.getUTCFullYear(),
-    };
-    sortOrders = { date: -1 };
-  }
-
-  if (unfinished) {
-    dateFilters = {
-      date: { $lte: endOfDay(dateToFilter) },
-      finished: false,
-      taken_away: false,
-    };
-    sortOrders = { date: -1 };
-  }
-
-  if (untaken) {
-    dateFilters = {
-      date: { $lte: endOfDay(dateToFilter) },
-      taken_away: false,
     };
     sortOrders = { date: -1 };
   }
@@ -181,114 +138,18 @@ export default async function Sales({ searchParams }) {
     _id: { $toString: "$_id" },
     createdAt: 1,
     date: 1,
+    kind: 1,
+    category: { _id: { $toString: "$category._id" }, name: "$category.name" },
+    sub_category: {
+      _id: { $toString: "$sub_category._id" },
+      name: "$sub_category.name",
+    },
     full_date: 1,
     pick_up_date: 1,
     full_pick_up_date: 1,
     creator_id: { $toString: "$creator._id" },
-    services: {
-      $map: {
-        input: "$services",
-        as: "service",
-        in: {
-          _id: {
-            $convert: { input: "$$service._id", to: "string" },
-          },
-          name: "$$service.name",
-          detail: "$$service.detail",
-          description: "$$service.description",
-          value: "$$service.price",
-          currency: "$$service.currency",
-          quantity: "$$service.quantity",
-          allow_quantity: "$$service.allow_quantity",
-        },
-      },
-    },
-    workers: {
-      $map: {
-        input: "$workers",
-        as: "worker",
-        in: {
-          _id: "$$worker.member_id",
-          name: "$$worker.member_name",
-          member_email: "$$worker.member_email",
-          member_name: "$$worker.member_name",
-          sales_percentage: "$$worker.sales_percentage",
-          percentage_to_pay: "$$worker.percentage_to_pay",
-        },
-      },
-    },
     store_id: { $toString: "$store_id" },
-    finished: 1,
-    finished_at: 1,
-    taken_away: 1,
-    taken_away_at: 1,
-    color: 1,
     amount: 1,
-    usd_amount: 1,
-    lat: { $arrayElemAt: ["$location.coordinates", 1] },
-    lng: { $arrayElemAt: ["$location.coordinates", 0] },
-    quote_id: { $toString: "$quote_id" },
-    quote_identifier: 1,
-    messages_count: { $size: "$messages" },
-    client: {
-      _id: { $toString: "$client_id" },
-      kind: "$client.kind",
-      icon: "$client.kind",
-      firstname: "$client.firstname",
-      lastname: "$client.lastname",
-      email: "$client.email",
-      category: "$client.category",
-      phone: "$client.phone",
-      country_code: "$client.country_code",
-      address: "$client.address",
-      name: { $concat: ["$client.firstname", " ", "$client.lastname"] },
-    },
-    vehicle: {
-      _id: { $toString: "$vehicle_id" },
-      brand: "$vehicle.brand",
-      model: "$vehicle.model",
-      kind: "$vehicle.kind",
-      kind_classification_id: "$vehicle.kind_classification_id",
-      insurance_name: "$vehicle.insurance_name",
-      insurance_id: "$vehicle.insurance_id",
-      patent: "$vehicle.patent",
-      pre_name: {
-        $concat: [
-          CONFIG.blob_url, // Inserta la URL base directamente
-          "/brands/",
-          {
-            $toLower: {
-              $replaceAll: {
-                input: "$vehicle.brand",
-                find: " ",
-                replacement: "-",
-              },
-            },
-          }, // Convierte la marca a slug
-          ".png",
-        ],
-      },
-      name: {
-        $concat: ["$vehicle.kind", " ", "$vehicle.model"],
-      },
-    },
-    discounts: {
-      $map: {
-        input: "$discounts",
-        as: "discount",
-        in: {
-          _id: {
-            $convert: { input: "$$discount._id", to: "string" },
-          },
-          name: "$$discount.name",
-          kind: "$$discount.kind",
-          currency: "$$discount.currency",
-          amount: "$$discount.amount",
-          value: "$$discount.value",
-        },
-      },
-    },
-    attachments_count: { $size: { $ifNull: ["$attachments", []] } },
     comments: {
       $map: {
         input: "$comments",
@@ -311,10 +172,7 @@ export default async function Sales({ searchParams }) {
         },
       },
     },
-    discounts_amount: 1,
-    usd_discounts_amount: 1,
     gathered_amount: 1,
-    usd_gathered_amount: 1,
   };
 
   const salesPipeline: any = [
@@ -325,19 +183,6 @@ export default async function Sales({ searchParams }) {
       $project: projectStage,
     },
     { $sort: sortOrders },
-  ];
-
-  const stayingCarsPipeline: any = [
-    {
-      $match: {
-        ...getWorkplace(user),
-        deleted: false,
-        taken_away: false,
-        pick_up_date: { $gt: startOfDay(weekStart) },
-        date: { $lt: weekEnd },
-      },
-    },
-    { $project: projectStage },
   ];
 
   if (!!search) {
@@ -358,7 +203,6 @@ export default async function Sales({ searchParams }) {
   }
 
   let gatheredByWallet = [];
-  let workers = [];
 
   let cashflowDateFilters, gatheringsSummary;
 
@@ -366,17 +210,6 @@ export default async function Sales({ searchParams }) {
   let sales = [];
 
   if ((isOwner || isManager) && !search) {
-    workers = await MemberModel.find(
-      {
-        "stores._id": user.store._id,
-        $or: [
-          { "payment_scheme.sales_percentage": { $gt: 0 } },
-          { "payment_scheme.fixed_salary": { $gt: 0 } },
-        ],
-      },
-      "user payment_scheme"
-    );
-
     sales = await SaleModel.aggregate(salesPipeline);
 
     cashflowDateFilters = weekly
@@ -451,14 +284,12 @@ export default async function Sales({ searchParams }) {
       const isUSD = curr.currency === "usd";
       const amount = isUSD ? 0 : curr.gathered;
       const usd_amount = isUSD ? curr.gathered : 0;
-      const amount_converted = amount / aquapp_rate;
-      const usd_amount_converted = usd_amount * aquapp_rate;
+      const amount_converted = amount;
 
       addToSummary(acc, {
         amount,
         amount_converted,
         usd_amount,
-        usd_amount_converted,
         count: isUSD ? 0 : curr.gatherings,
         usd_count: isUSD ? curr.gatherings : 0,
       });
@@ -479,7 +310,7 @@ export default async function Sales({ searchParams }) {
     );
   }
 
-  const reports = getSalesReports(sales, workers, aquapp_rate);
+  const reports = getSalesReports(sales, [], 1);
 
   const store = await StoreModel.findById(
     user?.store?._id,
@@ -488,11 +319,6 @@ export default async function Sales({ searchParams }) {
 
   const showReports = (daily || weekly || !!client_id) && !search && isOwner;
 
-  let staying_cars = [];
-
-  if (store?.show_permanence) {
-    staying_cars = await SaleModel.aggregate(stayingCarsPipeline);
-  }
   sales = addUUIDtoFields(sales, ["services", "discounts"]);
 
   return (
@@ -506,27 +332,13 @@ export default async function Sales({ searchParams }) {
               <CardTitle className="text-xl">
                 <div className="flex items-center gap-2">
                   <div className="flex flex-col">
-                    {(unfinished ||
-                      untaken ||
-                      daily ||
-                      weekly ||
-                      debtsView) && <span>Vehículos ingresados</span>}
-                    {!!search && <span>Ventas encontradas</span>}
-                    {!!client_id && <span>Historial de ventas</span>}
-                    <ViewDropdown count={sales.length} counts={counts} />
+                    <span>Operaciones</span>
                   </div>
                 </div>
               </CardTitle>
             </div>
 
             <div className="flex gap-2">
-              <MyFormDialog
-                form="client"
-                hidden
-                dialogToOpen="sale"
-                user={user}
-              />
-
               <MyFormDialog
                 form="sale"
                 user={user}
@@ -544,13 +356,6 @@ export default async function Sales({ searchParams }) {
             >
               <SaleCashflowsTable />
             </MyFormDialog>
-            <MyFormDialog form="vehicle" hidden dialogToOpen="sale" />
-            <MyFormDialog
-              form="service"
-              hidden
-              dialogToOpen="sale"
-              user={user}
-            />
           </div>
         </CardHeader>
         <CardContent
@@ -617,7 +422,7 @@ export default async function Sales({ searchParams }) {
           {weekly && (
             <WeeklySales
               weekSales={sales}
-              staying_cars={staying_cars}
+              staying_cars={[]}
               date={finalDate}
               companyName={user?.company.name}
             />
@@ -629,7 +434,7 @@ export default async function Sales({ searchParams }) {
         <DebtReport
           title="Resumen de ventas"
           className="mt-3"
-          aquapp_rate={aquapp_rate}
+          aquapp_rate={1}
           debts={reports.debtSummary}
           sales={reports.salesSummary}
           gatherings={gatheringsSummary}
@@ -647,7 +452,7 @@ export default async function Sales({ searchParams }) {
               key={sbc.type}
               data={sbc}
               className="w-full max-w-full"
-              aquappRate={aquapp_rate}
+              aquappRate={1}
               alwaysShow
             />
           ))}
@@ -664,7 +469,7 @@ export default async function Sales({ searchParams }) {
               entityName="cobro"
               preText="Distribución de los"
               afterText="de ventas netas de descuentos"
-              exchange_rate={aquapp_rate}
+              exchange_rate={1}
             />
             <WalletsGatherings gatheredByWallet={gatheredByWallet} />
           </div>
@@ -674,14 +479,14 @@ export default async function Sales({ searchParams }) {
               title="Ranking de vehículos"
               preText="Distribución de los"
               afterText="de ventas netas de descuentos"
-              exchange_rate={aquapp_rate}
+              exchange_rate={1}
             />
             <RankingTexts
               items={reports.salesByService}
               title="Ranking de servicios"
               preText="Distribución de los"
               afterText="de ventas brutas"
-              exchange_rate={aquapp_rate}
+              exchange_rate={1}
             />
           </div>
 
@@ -700,7 +505,7 @@ export default async function Sales({ searchParams }) {
           preText="Distribución de los"
           afterText="cobrados"
           className="mt-3 w-full max-w-full"
-          exchange_rate={aquapp_rate}
+          exchange_rate={1}
         />
       )}
     </div>

@@ -16,8 +16,6 @@ import {
 } from "@/helpers/mdb";
 import connectDB from "@/lib/connectDB";
 import { getFullDate, getUserDate } from "@/helpers/date";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { cleanRegExp } from "@/helpers/text";
 import CompanyModel from "@/schemas/company";
 import { v4 as uuidv4 } from "uuid";
@@ -37,52 +35,30 @@ export const upsert = async ({ data }, user) => {
     wallet,
     client,
     cancelling,
-    exchange_rate,
     category,
     sub_category,
     detail,
   } = data;
 
   const cashflowDate = date ? getUserDate(user, date) : getUserDate(user);
-  const result = await checkWalletClosure({
-    _id,
-    new_wallet_id: wallet._id,
-    new_full_date: getFullDate(cashflowDate),
-  });
-  console.log({ result });
-  if (!result.ok) {
-    return result;
-  }
+
   const session = await startTransaction();
-  const finalKind = !!sale_id || kind === "income" ? "Ingreso" : "Egreso";
-  const coef = !!sale_id || kind === "income" ? 1 : -1;
+  const sale = await SaleModel.findById(sale_id);
+  const finalKind = sale.kind === "income" ? "Ingreso" : "Egreso";
+  const coef = sale.kind === "income" ? 1 : -1;
   const isIncome = finalKind === "Ingreso";
 
   const finalDetail = detail;
   let finalCancelling = cancelling;
 
-  let finalExchangeRate = wallet.currency === cancelling ? 1 : exchange_rate;
-  let cancellingAmount = Math.round(amount * finalExchangeRate);
-
-  if (finalCancelling === "usd" && wallet.currency === "ars") {
-    cancellingAmount = Math.round(amount / finalExchangeRate);
-  }
-
-  if (!sale_id) {
-    cancellingAmount = null;
-    finalExchangeRate = null;
-    finalCancelling = null;
-  }
+  let finalExchangeRate = 1;
+  let cancellingAmount = Math.round(amount);
 
   try {
     const cashflow_data = {
       kind: finalKind,
-      category: !!sale_id
-        ? { _id: "67b32c823b2f2ae7ca4ceb4c", name: "Cobro" }
-        : category,
-      sub_category: !!sale_id
-        ? { _id: "67b32cb53b2f2ae7ca4ceb4e", name: "Venta de servicios" }
-        : sub_category,
+      category: sale.category,
+      sub_category: sale.sub_category,
       date: cashflowDate,
       full_date: getFullDate(cashflowDate),
       amount: amount * coef,
@@ -98,8 +74,7 @@ export const upsert = async ({ data }, user) => {
       creator: user,
       detail: !sale_id ? finalDetail : undefined,
     };
-    const saleGatheredAmountField =
-      finalCancelling === "usd" ? "usd_gathered_amount" : "gathered_amount";
+
     if (_id) {
       const prevCashflow = await CashflowModel.findById(
         _id,
@@ -126,7 +101,7 @@ export const upsert = async ({ data }, user) => {
           sale_id,
           {
             $inc: {
-              [saleGatheredAmountField]:
+              gathered_amount:
                 cancellingAmount - prevCashflow.cancelling_amount,
             },
           },
@@ -140,7 +115,7 @@ export const upsert = async ({ data }, user) => {
           sale_id,
           {
             $inc: {
-              [saleGatheredAmountField]: cancellingAmount,
+              gathered_amount: cancellingAmount,
               gatherings: 1,
             },
           },
@@ -149,13 +124,8 @@ export const upsert = async ({ data }, user) => {
         newCashflow.sale_date = updatedSale.date;
         newCashflow.sale_full_date = updatedSale.full_date;
 
-        const { client_id, client, vehicle, services } = updatedSale;
+        const { client_id } = updatedSale;
         newCashflow.client_id = client_id;
-        const servicesNames = services.map(
-          (s) => `${s.name}${s.quantity > 1 ? ` (${s.quantity})` : ""}`
-        );
-        newCashflow.detail = `Venta del ${format(newCashflow.sale_date, "EEEE dd/MM/yyyy", { locale: es })} a ${client.firstname}${client.lastname ? ` ${client.lastname}` : ""} (${vehicle.brand}${vehicle.model ? ` ${vehicle.model}` : ""}${vehicle.patent ? `, patente ${vehicle.patent}` : ""}).
-Servicios prestados: ${servicesNames.join(", ")}.`;
       } else {
         await CompanyModel.findByIdAndUpdate(
           user.company._id,

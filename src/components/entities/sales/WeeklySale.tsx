@@ -117,74 +117,15 @@ const SaleCard = ({
       >
         <ClientName
           client={s.client}
-          trimLastname
           gap="gap-1"
           nameHeight="4"
-          imageWidth="w-4"
           textClassName="truncate max-w-16"
         />
-        {s.lat && (
-          <SaleAddress s={s} className="text-[0.7rem] max-w-20 truncate" />
-        )}
-        <div className="flex items-center gap-1 mt-0.5">
-          <Image
-            src={`${CONFIG.blob_url}/brands/${toSlug(s.vehicle.brand)}.png`}
-            width={13}
-            height={13}
-            alt="Image"
-            className="w-3.5 h-auto"
-          />
 
-          <span className="font-light">
-            {s.vehicle.model ? capitalizeFirstLetter(s.vehicle.model) : ""}
-          </span>
-        </div>
-        {s.vehicle.insurance_id && (
-          <div className="flex items-center gap-1 mt-0.5">
-            <Image
-              src={`${CONFIG.blob_url}/institutions/${toSlug(s.vehicle.insurance_id)}.png`}
-              width={14}
-              height={14}
-              alt="Image"
-            />
-
-            <span className={`font-normal`}>{s.vehicle.insurance_name}</span>
-          </div>
-        )}
-        <div className="flex flex-col mt-3">
-          {s.services.map((service, i) => (
-            <div key={i} className="flex items-center text-nowrap ">
-              <span className="truncate mr-[0.2rem]">
-                {capitalizeFirstLetter(service.name)}
-              </span>
-              {service.allow_quantity && (
-                <span className="text-blue-600 font-light text-[0.65rem] mr-[0.2rem]">
-                  ({service.quantity})
-                </span>
-              )}
-              {service.description && (
-                <MyInfoTooltip
-                  text={`${service.name} ${service.quantity > 1 ? `(${service.quantity})` : ""}`}
-                  id={`${service._id}-tooltip-${s._id}`}
-                  className="py-1 ml-0.5 !z-50"
-                  tinyIcon
-                >
-                  {service.description}
-                </MyInfoTooltip>
-              )}
-            </div>
-          ))}
-        </div>
-        {(isOwner || isManager) && <Workers workers={s.workers} shortName />}
         <div className="flex items-start flex-col mt-2">
           <SaleProgressBar
             s={s}
             currency={store?.currency}
-            showFlags={store?.allow_multi_currency}
-          />
-          <SaleProgressBar
-            s={s}
-            currency={"usd"}
             showFlags={store?.allow_multi_currency}
           />
         </div>
@@ -261,34 +202,6 @@ const SaleCard = ({
               </div>
             )}
           </div>
-          {s.finished && !s.taken_away && (
-            <div
-              className="flex items-center gap-0.5 pb-1"
-              title="Fecha y hora de ingreso del vehículo"
-            >
-              <Image
-                src={`${CONFIG.blob_url}/race.png`}
-                className="w-[0.5rem] h-[0.5rem] mx-0.5"
-                width={14}
-                height={14}
-                alt="Image"
-              />
-            </div>
-          )}
-          {s.taken_away && (
-            <div
-              className="flex items-center gap-0.5"
-              title="Fecha y hora de ingreso del vehículo"
-            >
-              <Image
-                src={`${CONFIG.blob_url}/keys-6iGprFHBksy8CdBbVEkYbEnYjZd9yr.png`}
-                className="w-[0.7rem] h-[0.7rem] mx-0.5 scale-x-[-1]"
-                width={14}
-                height={14}
-                alt="Image"
-              />
-            </div>
-          )}
         </div>
       </Card>
     </div>

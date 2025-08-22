@@ -16,9 +16,8 @@ import CashflowsSummary from "@/components/entities/reports/CashflowsSummary";
 import CashflowsSubCategriesTable from "@/components/entities/cashflows/CashflowsSubCategriesTable";
 import WalletsSummary from "@/components/entities/reports/WalletsSummary";
 import ViewDropdown from "@/components/entities/sales/ViewDropdown";
-import { getAquappExchangeRate } from "@/helpers/mdb";
 import SubConceptViewFilter from "@/components/entities/cashflows/SubConceptViewFilter";
-import WalletModel, { WalletClosureModel } from "@/schemas/wallet";
+import WalletModel from "@/schemas/wallet";
 
 export default async function Cashflows({ searchParams }) {
   await connectDB();
@@ -219,61 +218,9 @@ export default async function Cashflows({ searchParams }) {
 
   const monthly = !!subCategory && view === "monthly";
 
-  const aquapp_rate = await getAquappExchangeRate(dateToFilter);
+  const aquapp_rate = 1;
 
-  const reports = await getCashflowsReports(cashflows, aquapp_rate);
-
-  let closures = [];
-  const lastCashflows = [];
-  if (!subCategory && !client && !search) {
-    closures = await WalletClosureModel.find(
-      {
-        ...getWorkplace(user, true),
-        deleted: false,
-        ...dayFilters,
-      },
-      {
-        _id: { $toString: "$_id" },
-        wallet_id: { $toString: "$wallet_id" },
-        full_date: 1,
-        date: 1,
-        day_opening: 1,
-        gathered: 1,
-        gatherings: 1,
-        spent: 1,
-        spents: 1,
-        balance: 1,
-        counted_closing: 1,
-        expected_closing: 1,
-        attachments_count: { $size: { $ifNull: ["$attachments", []] } },
-        comments_count: { $size: { $ifNull: ["$comments", []] } },
-        diff: 1,
-        notes: 1,
-        closed_by: { $toString: "$closed_by" },
-        closed_by_email: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      }
-    ).lean();
-    for (const wallet of gatheredByWallet) {
-      const lastCashflow = await CashflowModel.findOne({
-        ...getWorkplace(user, true),
-        deleted: false,
-        "wallet._id": wallet._id,
-      })
-        .select({
-          date: 1,
-          wallet_id: { $toString: "$wallet._id" },
-          _id: { $toString: "$_id" },
-        })
-        .lean()
-        .sort({ date: -1 })
-        .limit(1);
-      if (!!lastCashflow) {
-        lastCashflows.push(lastCashflow);
-      }
-    }
-  }
+  const reports = await getCashflowsReports(cashflows, 1);
 
   return (
     <div className="pb-40">
@@ -300,38 +247,17 @@ export default async function Cashflows({ searchParams }) {
               </CardTitle>
             </div>
             <div className="flex gap-2">
-              {isOwner && (
-                <MyFormDialog
-                  form="cashflow-sub-category"
-                  invalidateQueries
-                  automaticClose={false}
-                  variant="secondary"
-                  buttonText="Categorías de egresos"
-                  icon="shapes"
-                >
-                  <CashflowsSubCategriesTable />
-                </MyFormDialog>
-              )}
               <MyFormDialog
-                form="cashflow"
+                form="cashflow-sub-category"
                 invalidateQueries
-                fieldsIndex={1}
-                buttonText="Crear movimiento"
-                titleName="movimiento"
-                user={user}
-                onlyShow
-              />
-              <MyFormDialog
-                form="cashflow"
-                invalidateQueries
-                fieldsIndex={2}
-                titleName="movimiento de saldo"
-                user={user}
-                icon="transfer"
-                action="transfer"
-                onlyShow
-                onlyIcon
-              />
+                automaticClose={false}
+                variant="secondary"
+                buttonText="Categorías de egresos"
+                icon="shapes"
+              >
+                <CashflowsSubCategriesTable />
+              </MyFormDialog>
+
               <MyFormDialog
                 form="wallet"
                 fieldsIndex={1}
@@ -419,10 +345,10 @@ export default async function Cashflows({ searchParams }) {
         {(isOwner || isManager) && !search && !client_id && (
           <WalletsSummary
             gatheredByWallet={gatheredByWallet}
-            closures={closures}
+            closures={[]}
             date={dateToFilter}
             dayFilters={dayFilters}
-            lastCashflows={lastCashflows}
+            lastCashflows={[]}
             storeWalletsBalances={storeWalletsBalances}
           />
         )}
