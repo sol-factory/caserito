@@ -1,10 +1,7 @@
-import BirthdayInput from "@/components/custom-ui/BirthdayInput";
 import { DatePicker } from "@/components/custom-ui/DatePicker";
 import FileUploadInput from "@/components/custom-ui/FileUploadInput";
 import MultiSelect from "@/components/custom-ui/MultiSelect";
 import MyInput from "@/components/custom-ui/MyInput";
-import DiscountForm from "@/components/entities/discounts/DiscountForm";
-import SaleServices from "@/components/entities/sales/SaleServices";
 import {
   atLeastOneObject,
   optionalString,
@@ -15,53 +12,30 @@ import {
   ArrowUpDown,
   Bell,
   BuildingIcon,
-  Calculator,
   ChartAreaIcon,
   ChartBar,
   CircleDollarSign,
-  CreditCard,
   MapPin,
-  Percent,
-  Send,
-  Tags,
   UserCog2,
-  Users,
-  Video,
   Wallet2,
 } from "lucide-react";
 import { z } from "zod";
-import { CONFIG } from "./constanst";
-import { toSlug } from "@/helpers/text";
-import { focusAfter, getCountry } from "@/helpers/ui";
 import SaleRowMenuItems from "@/components/entities/sales/SaleRowMenuItems";
-import ClientRowMenuItems from "@/components/entities/clients/ClientRowMenuItems";
-import MyTextAreaCE from "@/components/custom-ui/MyTextAreaCE";
-import ServiceRowMenuItems from "@/components/entities/services/ServiceRowMenuItems";
-import DropdownVehicles from "@/components/custom-ui/DropdownVehicles";
 import MemberRowMenuItems from "@/components/entities/users/MemberRowMenuItems";
-import TemplateRowMenuItems from "@/components/entities/templates/TemplateRowMenuItems";
 import StoreRowMenuItems from "@/components/entities/stores/StoreRowMenuItems";
 import MyTimeInput from "@/components/custom-ui/MyTimeInput";
 import MyCheckboxField from "@/components/custom-ui/MyCheckbox";
 import CompanyRowMenuItems from "@/components/entities/companies/CompanyRowsMenuItems";
 import MyTextArea from "@/components/custom-ui/MyTextArea";
 import CashflowRowMenuItems from "@/components/entities/cashflows/CashflowRowMenuItems";
-import WhatsappNumberRowMenuItems from "@/components/entities/templates/WhatsappNumberRowMenuItems";
-import ServicePrices from "@/components/entities/services/ServicePrices";
-import ToggleCurrency, {
-  ToogleTinyCurrency,
-} from "@/components/entities/services/ToggleCurrency";
-import QuoteRowMenuItems from "@/components/entities/quotes/QuoteRowMenuItems";
-import QuoteServices from "@/components/entities/quotes/QuoteServices";
+import ToggleCurrency from "@/components/entities/services/ToggleCurrency";
 import StoreMap from "@/components/entities/stores/StoreMap";
 import { CardTitle } from "@/components/ui/card";
 import MemberPermissions from "@/components/entities/users/MemberPermissions";
 import MemberSalary from "@/components/entities/users/MemberSalary";
-import TooglePersonKind from "@/components/entities/clients/TogglePersonKind";
 import ToogleCashflowKind from "@/components/entities/cashflows/ToggleCashflowKind";
 import MainCashflowForm from "@/components/entities/cashflows/MainCashflowForm";
 import SecondaryCashflowForm from "@/components/entities/cashflows/SecondaryCashflowForm";
-import { hasRepeatedIds } from "@/helpers/arrays";
 import WalletRowMenuItems from "@/components/entities/wallets/WalletRowMenuItems";
 import AttachmentRowMenuItems from "@/components/entities/attachments/AttachmentRowMenuItems";
 import WalletClosureForm from "@/components/entities/wallets/WalletClosureForm";
