@@ -112,7 +112,7 @@ export const getItems = async ({ filterId, searchText }: getItemsProps) => {
 
 export const getLoginCode = async ({ email }: { email: string }) => {
   const lowerEmail = email.toLowerCase();
-  let user = await UserModel.findOne({ email: lowerEmail });
+  const user = await UserModel.findOne({ email: lowerEmail });
 
   if (!user) {
     return { ok: false, message: "Usuario no encontrado" };
@@ -138,7 +138,7 @@ export const login = async ({ email, code, geo }) => {
       filter.login_code = String(code);
     }
 
-    let user = await UserModel.findOne(filter);
+    const user = await UserModel.findOne(filter);
 
     if (!user) {
       return { ok: false, message: "Código o correo incorrectos" };

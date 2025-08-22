@@ -26,19 +26,8 @@ import {
 } from "@/helpers/wallets";
 
 export const upsert = async ({ data }, user) => {
-  const {
-    _id,
-    date,
-    kind,
-    amount,
-    sale_id,
-    wallet,
-    client,
-    cancelling,
-    category,
-    sub_category,
-    detail,
-  } = data;
+  const { _id, date, amount, sale_id, wallet, client, cancelling, detail } =
+    data;
 
   const cashflowDate = date ? getUserDate(user, date) : getUserDate(user);
 
@@ -49,10 +38,10 @@ export const upsert = async ({ data }, user) => {
   const isIncome = finalKind === "Ingreso";
 
   const finalDetail = detail;
-  let finalCancelling = cancelling;
+  const finalCancelling = cancelling;
 
-  let finalExchangeRate = 1;
-  let cancellingAmount = Math.round(amount);
+  const finalExchangeRate = 1;
+  const cancellingAmount = Math.round(amount);
 
   try {
     const cashflow_data = {
