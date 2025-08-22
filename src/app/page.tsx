@@ -5,7 +5,7 @@ export default async function Dashboard() {
   return (
     <body className="pb-48">
       <div className="w-full pt-10">
-        <LoginSide tutorialId="PJm3oYU25dk" ownersPage />
+        <LoginSide ownersPage />
       </div>
 
       <MyToaster />

@@ -115,7 +115,7 @@ export const getLoginCode = async ({ email }: { email: string }) => {
   let user = await UserModel.findOne({ email: lowerEmail });
 
   if (!user) {
-    user = await UserModel.create({ email: lowerEmail });
+    return { ok: false, message: "Usuario no encontrado" };
   }
 
   const code = generateLoginCode();
@@ -143,36 +143,20 @@ export const login = async ({ email, code, geo }) => {
     if (!user) {
       return { ok: false, message: "Código o correo incorrectos" };
     }
-    const userCountry = user.geo?.country;
-    const shouldUpdateGeo = !userCountry;
 
     const h = await headers();
     const ip = h.get("x-forwarded-for");
 
     await UserModel.findByIdAndUpdate(user._id, { $addToSet: { ips: ip } });
 
-    if (shouldUpdateGeo) {
-      const country = decodeURIComponent(geo?.country?.replaceAll("%20", " "));
-      const city = decodeURIComponent(geo?.city?.replaceAll("%20", " "));
-      user = await UserModel.findOneAndUpdate(
-        { email },
-        {
-          geo: {
-            country: country !== "undefined" ? country : "AR",
-            city: city !== "undefined" ? city : "",
-            flag: geo.flag,
-            timezone: geo.timezone,
-          },
-        },
-        { new: true }
-      );
-    }
-
     const membership = await MemberModel.findOne({
       "user.email": user.email,
       deleted: false,
     });
     const company = await CompanyModel.findById(membership?.company?._id);
+
+    if (!company || !membership)
+      return { ok: false, message: "Empresa no encontrada" };
 
     const payload = generateTokenPayload(
       user,
@@ -190,7 +174,7 @@ export const login = async ({ email, code, geo }) => {
 
     return {
       ok: true,
-      redirectTo: !!membership ? "/washes" : "/companies/new",
+      redirectTo: "/washes",
     };
   } catch (error) {
     await ErrorModel.create({
@@ -221,7 +205,7 @@ export const changeLogin = async ({ data: { company, role, store } }, user) => {
 };
 
 export const logout = async (_, user) => {
-  const redirectTo = user.role === "Socio" ? "/" : "/login";
+  const redirectTo = "/";
   await deleteSession();
   return { ok: true, redirectTo, message: "Se cerró la sesión" };
 };

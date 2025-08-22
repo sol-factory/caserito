@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 import TutorialVideo from "../tutorials/TutorialVideo";
 
-const LoginSide = ({ tutorialId, ownersPage = false }) => {
+const LoginSide = ({ ownersPage = false }) => {
   return (
     <div className="flex items-start  justify-center  pb-6 pt-2 sm:pt-10 lg:pb-24 bg-white h-screen">
       <div className="flex flex-col items-center justify-center w-[350px] gap-6">
@@ -19,29 +19,12 @@ const LoginSide = ({ tutorialId, ownersPage = false }) => {
             height={60}
           />
           <h1 className="text-gray-800 text-4xl   sm:text-6xl  font-bold">
-            Aquapp
+            Caserito
           </h1>
         </div>
 
-        <TutorialVideo
-          videoId="LsMtF3x8OZw"
-          custom_id={1}
-          title="Introducción Aquapp"
-        />
-
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl lg:text-3xl font-bold">Iniciar sesión</h1>
-
-          {ownersPage && (
-            <TutorialBadge
-              url={`https://youtu.be/oOQ_6e2UsTA`}
-              title="¿Cómo empezar?"
-              step={1}
-              className="!text-xs flex"
-              tiny
-              custom_id={2}
-            />
-          )}
         </div>
         <div className="grid gap-4 w-full">
           <div className="grid gap-2">
