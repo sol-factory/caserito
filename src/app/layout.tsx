@@ -4,9 +4,8 @@ import "./login.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Aquapp",
-  description:
-    "El Software de gestión ideal para negocios que brindan servicios de lavado y/o detailing a vehículos de clientes.",
+  title: "Caserito",
+  description: "App para que el gate lleve más fácil los números del case.",
 };
 
 export default async function LoginLayout({
