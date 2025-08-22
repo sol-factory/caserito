@@ -1,0 +1,9 @@
+export * as saleSchema from "./sale";
+export * as clientSchema from "./client";
+export * as userSchema from "./user";
+export * as companySchema from "./company";
+export * as cashflowSchema from "./cashflow";
+export * as vehicleSchema from "./vehicle";
+export * as brandSchema from "./brand";
+export * as roleSchema from "./role";
+export * as serviceSchema from "./service";

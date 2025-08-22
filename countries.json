@@ -1,0 +1,226 @@
+[
+  {
+    "name": "Argentina",
+    "code": "AR",
+    "phone_code": "+54",
+    "flag": "🇦🇷",
+    "used_in": ["AR", "CL", "UY", "PY", "BR", "US", "ES"]
+  },
+  {
+    "name": "Bolivia",
+    "code": "BO",
+    "phone_code": "+591",
+    "flag": "🇧🇴",
+    "used_in": ["BO", "AR", "BR"]
+  },
+  {
+    "name": "Brasil",
+    "code": "BR",
+    "phone_code": "+55",
+    "flag": "🇧🇷",
+    "used_in": ["BR", "AR", "US"]
+  },
+  {
+    "name": "Canadá",
+    "code": "CA",
+    "phone_code": "+1",
+    "flag": "🇨🇦",
+    "used_in": ["CA", "US"]
+  },
+  {
+    "name": "Chile",
+    "code": "CL",
+    "phone_code": "+56",
+    "flag": "🇨🇱",
+    "used_in": ["CL", "AR"]
+  },
+  {
+    "name": "Colombia",
+    "code": "CO",
+    "phone_code": "+57",
+    "flag": "🇨🇴",
+    "used_in": ["CO", "AR", "US", "ES"]
+  },
+  {
+    "name": "Costa Rica",
+    "code": "CR",
+    "phone_code": "+506",
+    "flag": "🇨🇷",
+    "used_in": ["CR", "US"]
+  },
+  {
+    "name": "Cuba",
+    "code": "CU",
+    "phone_code": "+53",
+    "flag": "🇨🇺",
+    "used_in": ["CU", "US"]
+  },
+  {
+    "name": "Ecuador",
+    "code": "EC",
+    "phone_code": "+593",
+    "flag": "🇪🇨",
+    "used_in": ["EC", "CO", "US"]
+  },
+  {
+    "name": "El Salvador",
+    "code": "SV",
+    "phone_code": "+503",
+    "flag": "🇸🇻",
+    "used_in": ["SV", "US"]
+  },
+  {
+    "name": "Guatemala",
+    "code": "GT",
+    "phone_code": "+502",
+    "flag": "🇬🇹",
+    "used_in": ["GT", "US"]
+  },
+  {
+    "name": "Honduras",
+    "code": "HN",
+    "phone_code": "+504",
+    "flag": "🇭🇳",
+    "used_in": ["HN", "US"]
+  },
+  {
+    "name": "México",
+    "code": "MX",
+    "phone_code": "+52",
+    "flag": "🇲🇽",
+    "used_in": ["MX", "US", "AR"]
+  },
+  {
+    "name": "Nicaragua",
+    "code": "NI",
+    "phone_code": "+505",
+    "flag": "🇳🇮",
+    "used_in": ["NI", "US"]
+  },
+  {
+    "name": "Panamá",
+    "code": "PA",
+    "phone_code": "+507",
+    "flag": "🇵🇦",
+    "used_in": ["PA", "US"]
+  },
+  {
+    "name": "Paraguay",
+    "code": "PY",
+    "phone_code": "+595",
+    "flag": "🇵🇾",
+    "used_in": ["PY", "AR"]
+  },
+  {
+    "name": "Perú",
+    "code": "PE",
+    "phone_code": "+51",
+    "flag": "🇵🇪",
+    "used_in": ["PE", "AR", "CL"]
+  },
+  {
+    "name": "Puerto Rico",
+    "code": "PR",
+    "phone_code": "+1",
+    "flag": "🇵🇷",
+    "used_in": ["PR", "US"]
+  },
+  {
+    "name": "República Dominicana",
+    "code": "DO",
+    "phone_code": "+1",
+    "flag": "🇩🇴",
+    "used_in": ["DO", "US"]
+  },
+  {
+    "name": "Uruguay",
+    "code": "UY",
+    "phone_code": "+598",
+    "flag": "🇺🇾",
+    "used_in": ["UY", "AR"]
+  },
+  {
+    "name": "Venezuela",
+    "code": "VE",
+    "phone_code": "+58",
+    "flag": "🇻🇪",
+    "used_in": ["VE", "CO", "US", "AR"]
+  },
+  {
+    "name": "Estados Unidos",
+    "code": "US",
+    "phone_code": "+1",
+    "flag": "🇺🇸",
+    "used_in": ["US", "CA", "MX"]
+  },
+  {
+    "name": "Alemania",
+    "code": "DE",
+    "phone_code": "+49",
+    "flag": "🇩🇪",
+    "used_in": ["DE", "US"]
+  },
+  {
+    "name": "España",
+    "code": "ES",
+    "phone_code": "+34",
+    "flag": "🇪🇸",
+    "used_in": ["ES", "AR", "MX", "VE"]
+  },
+  {
+    "name": "Francia",
+    "code": "FR",
+    "phone_code": "+33",
+    "flag": "🇫🇷",
+    "used_in": ["FR", "ES"]
+  },
+  {
+    "name": "Italia",
+    "code": "IT",
+    "phone_code": "+39",
+    "flag": "🇮🇹",
+    "used_in": ["IT", "FR"]
+  },
+  {
+    "name": "Países Bajos",
+    "code": "NL",
+    "phone_code": "+31",
+    "flag": "🇳🇱",
+    "used_in": ["NL", "DE"]
+  },
+  {
+    "name": "Portugal",
+    "code": "PT",
+    "phone_code": "+351",
+    "flag": "🇵🇹",
+    "used_in": ["PT", "ES", "BR"]
+  },
+  {
+    "name": "Reino Unido",
+    "code": "GB",
+    "phone_code": "+44",
+    "flag": "🇬🇧",
+    "used_in": ["GB", "IE"]
+  },
+  {
+    "name": "Rusia",
+    "code": "RU",
+    "phone_code": "+7",
+    "flag": "🇷🇺",
+    "used_in": ["RU"]
+  },
+  {
+    "name": "Suiza",
+    "code": "CH",
+    "phone_code": "+41",
+    "flag": "🇨🇭",
+    "used_in": ["CH", "DE", "FR"]
+  },
+  {
+    "name": "Suecia",
+    "code": "SE",
+    "phone_code": "+46",
+    "flag": "🇸🇪",
+    "used_in": ["SE", "NO"]
+  }
+]
