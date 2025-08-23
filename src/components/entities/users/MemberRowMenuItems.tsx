@@ -7,7 +7,6 @@ import {
 import { useStore } from "@/stores";
 import { DollarSign, Eye, KeyRound } from "lucide-react";
 import React from "react";
-import TemplatesMenuItems from "../templates/TemplatesMenuItems";
 import { COUNTRIES } from "@/config/constanst";
 import usePermissions from "@/hooks/use-permissions";
 import AttachmentsDropdownItem from "../attachments/AttachmentsDropdownItem";
@@ -70,16 +69,6 @@ const MemberRowMenuItems = ({ m, companyName }) => {
 
       <DropdownMenuSeparator />
 
-      <TemplatesMenuItems
-        c={{
-          firstname: m.firstname,
-          phone: m?.phone,
-          country_code: m.country_code,
-        }}
-        entity="member"
-        screen="Personal"
-        isOwner={isOwner}
-      />
       {isOwner && (
         <>
           <DropdownMenuSeparator />
