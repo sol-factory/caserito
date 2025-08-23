@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CircleCheckBig } from "lucide-react";
-import TutorialVideo from "../tutorials/TutorialVideo";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
@@ -81,11 +79,6 @@ const Welcome = () => {
           <b className="underline">Siguiente paso</b>: configurar tus{" "}
           <b className="text-blue-600">Servicios</b>
         </span>
-        <TutorialVideo
-          videoId="jcY5ItMP5V8"
-          custom_id={3}
-          title={"Vió tutorial paso 3"}
-        />
       </DialogContent>
     </Dialog>
   );

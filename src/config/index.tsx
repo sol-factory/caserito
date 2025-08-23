@@ -28,7 +28,6 @@ import MyCheckboxField from "@/components/custom-ui/MyCheckbox";
 import CompanyRowMenuItems from "@/components/entities/companies/CompanyRowsMenuItems";
 import MyTextArea from "@/components/custom-ui/MyTextArea";
 import CashflowRowMenuItems from "@/components/entities/cashflows/CashflowRowMenuItems";
-import ToggleCurrency from "@/components/entities/services/ToggleCurrency";
 import StoreMap from "@/components/entities/stores/StoreMap";
 import { CardTitle } from "@/components/ui/card";
 import MemberPermissions from "@/components/entities/users/MemberPermissions";
@@ -525,14 +524,6 @@ export const ENTITIES = {
     fields: [
       ({ creating, store }) => (
         <>
-          {store?.country_code === "AR" && (
-            <ToggleCurrency
-              form="wallet"
-              field="currency"
-              value1={store?.currency}
-              value2="usd"
-            />
-          )}
           <MultiSelect
             form="wallet"
             field="institution"
