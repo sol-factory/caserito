@@ -140,8 +140,9 @@ export default function LoginForm() {
           <Button
             id="login-btn"
             form="login"
+            type="button"
             translate="no"
-            formAction={handleLogin}
+            onClick={handleLogin}
             disabled={loading === "login" || !code || String(code).length !== 6}
             className="w-full"
           >
