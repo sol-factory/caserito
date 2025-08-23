@@ -4,7 +4,11 @@ import { Input } from "../ui/input";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { useStore } from "@/stores";
 
-const MultiSelectSearch = ({ singular, fastDebounce, placeholder = "" }) => {
+const MultiSelectSearch = ({
+  singular,
+  fastDebounce = false,
+  placeholder = "",
+}) => {
   const update = useStore((s) => s.update);
   const [search, setSearch] = useState("");
 

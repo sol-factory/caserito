@@ -23,7 +23,6 @@ import HandleErrors from "@/components/custom-ui/HandleErrors";
 import StoreModel from "@/schemas/store";
 import { SubscriptionModel } from "@/schemas/subscription";
 import Welcome from "@/components/entities/companies/Welcome";
-import PausedBanner from "@/components/custom-ui/PausedBanner";
 import DeleteDialog from "@/components/custom-ui/DeleteDialog";
 import { DatePickerPeriod } from "@/components/custom-ui/DatePickerPeriod";
 import AttachmentsTable from "@/components/entities/attachments/AttachmentsTable";
@@ -211,16 +210,7 @@ export default async function AppLayout({ children }) {
                 {!activeStoreSub && !(storeSub?.status === "paused") && (
                   <ExpirationBanner remainingDays={remainingDays} />
                 )}
-                {storeSub?.status === "paused" && (
-                  <PausedBanner
-                    subscription_id={storeSub?.subscription_id}
-                    debt={
-                      storeSub.amount +
-                      storeSub.messages.amount +
-                      storeSub.quotes.amount
-                    }
-                  />
-                )}
+
                 <main
                   className="w-full mt-14 sm:mt-0 min-h-[40rem] sm:pr-6 md:pb-6 overflow-y-auto"
                   style={{ scrollbarWidth: "none" }}

@@ -74,14 +74,11 @@ const MyTextAreaCE = <E extends keyof StateStore>({
   autoFocus,
 }: Props<E>) => {
   const content = useStore((s) => s[entity][field]) as string;
-  const screens = useStore((s) => s.template.screens);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     ref.current.innerHTML = content;
   }, [content]);
-
-  const screensNames = screens.map((s) => s.name);
 
   const handleKeyDown = (e) => {
     // Simular "Shift + Enter" cuando el usuario presiona "Enter"
@@ -109,37 +106,6 @@ const MyTextAreaCE = <E extends keyof StateStore>({
 
   return (
     <div>
-      <div className="flex flex-col gap-1.5 flex-wrap mb-2">
-        <div>
-          <span className="text-xs underline">Agregar dinámicamente</span>
-          <span className="text-xs">:</span>{" "}
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {POSSIBLE_TEAMPLES.filter((pt: TPossibleTemplates) => {
-            const canBeUsed =
-              screensNames.every((sn) => pt.allowedScreens.includes(sn)) &&
-              screensNames.length > 0;
-
-            return canBeUsed;
-          }).map((pt: TPossibleTemplates) => (
-            <button
-              key={pt.name}
-              className="bg-blue-100 select-none cursor-pointer rounded px-1 text-xs"
-              onClick={(e) => {
-                e.preventDefault();
-
-                insertHtmlAtCursorPosition(
-                  ref.current,
-                  genTemplatePlaceholder(pt.name)
-                );
-              }}
-            >
-              {pt.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div
         id={String(id)}
         ref={ref}

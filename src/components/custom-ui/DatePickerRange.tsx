@@ -2,10 +2,8 @@
 import {
   addDays,
   endOfMonth,
-  endOfWeek,
   endOfYear,
   format,
-  isToday,
   startOfMonth,
   startOfWeek,
   startOfYear,
@@ -32,7 +30,7 @@ import { weekRangeText } from "@/helpers/date";
 
 type SelectableStates = Pick<
   StateStore,
-  "vehicle" | "service" | "user" | "sale" | "filter" | "client" | "cashflow"
+  "user" | "sale" | "filter" | "cashflow"
 >;
 
 type Props<E extends keyof SelectableStates> = {

@@ -265,7 +265,6 @@ const MultiSelect = <E extends keyof SelectableStates>({
               <>
                 <MultiSelectSearch
                   singular={singular}
-                  fastDebounce={form === "brand"}
                   placeholder={searchPlaceholder}
                 />
                 <Separator className="my-1 w-full" />
