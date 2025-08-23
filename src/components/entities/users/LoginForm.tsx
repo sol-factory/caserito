@@ -42,14 +42,12 @@ export default function LoginForm() {
   const handleLogin = async () => {
     update("loading", "login");
 
-    const result = await api(
-      {
-        email,
-        code,
-      },
-      "user",
-      "login"
-    );
+    const res: any = await fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ email: email.trim(), code }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const result = await res.json();
 
     console.log({ result });
 
