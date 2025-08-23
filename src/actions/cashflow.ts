@@ -25,33 +25,25 @@ import {
 } from "@/helpers/wallets";
 
 export const upsert = async ({ data }, user) => {
-  const { _id, date, amount, sale_id, wallet, client, cancelling, detail } =
-    data;
+  const { _id, date, amount, sale_id, wallet, client, detail } = data;
 
   const cashflowDate = date ? getUserDate(user, date) : getUserDate(user);
 
   const session = await startTransaction();
   const sale = await SaleModel.findById(sale_id);
-  const finalKind = sale.kind === "income" ? "Ingreso" : "Egreso";
   const coef = sale.kind === "income" ? 1 : -1;
-  const isIncome = finalKind === "Ingreso";
-
-  const finalDetail = detail;
-  const finalCancelling = cancelling;
+  const isIncome = sale.kind === "income";
 
   const finalExchangeRate = 1;
   const cancellingAmount = Math.round(amount);
 
   try {
     const cashflow_data = {
-      kind: finalKind,
       category: sale.category,
       sub_category: sale.sub_category,
       date: cashflowDate,
       full_date: getFullDate(cashflowDate),
       amount: amount * coef,
-      cancelling: finalCancelling,
-      cancelling_amount: cancellingAmount,
       sale_id: !!sale_id ? sale_id : null,
       exchange_rate: finalExchangeRate,
       company_id: user.company._id,
@@ -60,7 +52,7 @@ export const upsert = async ({ data }, user) => {
       client_name: client?.name || "",
       wallet: { ...wallet, logo_url: wallet.pre_name },
       creator: user,
-      detail: !sale_id ? finalDetail : undefined,
+      detail,
     };
 
     if (_id) {
