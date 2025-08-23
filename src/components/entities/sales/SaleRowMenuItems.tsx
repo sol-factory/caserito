@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import TemplatesMenuItems from "../templates/TemplatesMenuItems";
 import DeleteIcon from "@/components/custom-ui/DeleteIcon";
 import { getFullDate } from "@/helpers/date";
 import api from "@/helpers/api";
