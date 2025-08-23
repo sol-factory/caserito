@@ -13,7 +13,6 @@ import SaleCashflowRow from "./SaleCashflowRow";
 import { notify } from "@/helpers/notify";
 
 const SaleCashflowsTable = () => {
-  const { getFlag } = useFlags();
   const cashflow_amount = useStore((s) => s.cashflow.amount);
   const creating = useStore((s) => s.creating);
   const update = useStore((s) => s.update);
@@ -45,18 +44,13 @@ const SaleCashflowsTable = () => {
   const activeCashflows =
     cashflows?.filter((c) => !c.deleted && cancelling === c.cancelling) || [];
 
-  const cancellingFlag = getFlag(cancelling);
-  const amountField = cancelling === "usd" ? "usd_amount" : "amount";
-  const discountsAmountField =
-    cancelling === "usd" ? "usd_discounts_amount" : "discounts_amount";
+  const amountField = "amount";
 
   const amount = sale[amountField];
-  const discountsAmount = sale[discountsAmountField];
   const saleNetAmount = amount;
 
   const gathered =
-    activeCashflows?.reduce((prev, curr) => prev + curr.cancelling_amount, 0) ||
-    0;
+    activeCashflows?.reduce((prev, curr) => prev + curr.amount, 0) || 0;
 
   const pendingAmount = Math.round(saleNetAmount - gathered);
 
@@ -86,12 +80,11 @@ const SaleCashflowsTable = () => {
 
   return (
     <div className="mb-4">
-      <DialogTitle className="mb-3">Resumen de la venta</DialogTitle>
+      <DialogTitle className="mb-3">Resumen de la operación</DialogTitle>
 
       <div className="flex flex-col mb-2">
         <div className="flex items-center justify-between text-sm w-full font-normal">
-          <span>Deuda inicial en {cancellingFlag}</span>{" "}
-          <span>{toMoney(saleNetAmount)}</span>{" "}
+          <span>Deuda inicial</span> <span>{toMoney(saleNetAmount)}</span>{" "}
         </div>
 
         <span className="text-xs underline mt-3 mb-2">Cobros recibidos</span>
@@ -130,7 +123,7 @@ const SaleCashflowsTable = () => {
           });
         }}
       >
-        <span>Restan recibir {cancellingFlag}</span>
+        <span>Restan recibir </span>
         <span>{toMoney(pendingAmount)}</span>
       </div>
     </div>

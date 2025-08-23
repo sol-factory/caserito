@@ -1,4 +1,5 @@
 import { toMoney } from "@/helpers/fmt";
+import { getWalletUrl } from "@/helpers/ui";
 import useFlags from "@/hooks/use-falgs";
 import usePermissions from "@/hooks/use-permissions";
 import { useStore } from "@/stores";
@@ -42,7 +43,7 @@ const SaleCashflowRow = ({ c, selectedId }) => {
           <div className="flex gap-2">
             <div className="flex flex-col justify-center w-5">
               <Image
-                src={c.wallet.logo_url}
+                src={getWalletUrl(c.wallet)}
                 alt="Logo marca"
                 width={20}
                 height={20}
@@ -53,28 +54,16 @@ const SaleCashflowRow = ({ c, selectedId }) => {
               <span>{c.wallet.name}</span>
               <div className="flex items-center text-[0.5rem] font-extralight -mt-0.5 text-muted-foreground">
                 <span className="text-[0.5rem] text-gray-600 font-extralight mr-2">
-                  {format(new Date(c.date), "dd/MMM", {
+                  {format(new Date(c.date), "EE dd/MM HH:mm", {
                     locale: es,
                   })}
                 </span>
-                <span>{getFlag(c.wallet.currency)}</span>
-                <span className="font-light text-green-600 ml-0.5">
-                  {toMoney(c.amount, false, false)}
-                </span>{" "}
-                {c.exchange_rate > 1 && (
-                  <>
-                    <span className="text-muted-foreground px-1">a</span>{" "}
-                    <span className="text-blue-600">
-                      {toMoney(c.exchange_rate, false, false)}{" "}
-                    </span>{" "}
-                  </>
-                )}
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-col items-end w-fit text-nowrap text-center align-top">
-          <span>{toMoney(c.cancelling_amount)} </span>
+          <span>{toMoney(c.amount)} </span>
           {canUpdate && !c.deleted && (
             <div className="flex items-center font-light justify-center hover:cursor-pointer">
               <span

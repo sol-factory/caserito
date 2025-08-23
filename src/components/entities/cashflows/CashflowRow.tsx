@@ -45,7 +45,7 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
           </div>
           <div className={`flex flex-col max-w-48 sm:w-72 items-start pr-3`}>
             <span
-              className={`text-nowrap ${c.kind === "Ingreso" ? "text-chart-2" : "text-chart-3"}`}
+              className={`text-nowrap ${c.category.name === "VENTA" ? "text-chart-2" : "text-chart-3"}`}
             >
               {toMoney(
                 c.amount || 0,

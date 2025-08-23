@@ -19,7 +19,7 @@ const SaleRow = ({
   colorAllowed = false,
   multiCurrency = false,
 }) => {
-  const { can_view_amount_sale, isOwner, isManager } = usePermissions();
+  const { isOwner, isManager } = usePermissions();
 
   const sale_date = new Date(
     s.full_date?.year,
@@ -66,7 +66,9 @@ const SaleRow = ({
       >
         <div className="w-48">
           <div className="flex flex-col">
-            <span className="text-blue-600 font-bold">
+            <span
+              className={`${s.category.name === "VENTA" ? "text-blue-600" : "text-red-600"} font-bold`}
+            >
               {s.sub_category.name}
             </span>
             <span className="text-muted-foreground text-xs font-light">

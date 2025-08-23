@@ -114,7 +114,7 @@ const SaleRowMenuItems = ({ s, isOwner, isManager = false }) => {
           width={18}
           height={18}
         />
-        Cobros recibidos
+        {s.category.name === "VENTA" ? "Cobros recibidos" : "Pagos realizados"}
       </DropdownMenuItem>
 
       <CommentsDropdownItem mongoose_model="Sale" model_id={s._id} />

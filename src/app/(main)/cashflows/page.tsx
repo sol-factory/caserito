@@ -215,17 +215,11 @@ export default async function Cashflows({ searchParams }) {
     { _id: { $toString: "$_id" }, balance: 1 }
   ).lean();
 
-  const { isOwner, isManager } = getBooleanRoles(user);
-
   const monthly = !!subCategory && view === "monthly";
 
   const aquapp_rate = 1;
 
   const reports = await getCashflowsReports(cashflows, 1);
-
-  console.log({
-    gatheredByWallet,
-  });
 
   return (
     <div className="pb-40">

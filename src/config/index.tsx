@@ -80,9 +80,9 @@ export const ENTITIES = {
       date: z.date({ coerce: true, required_error: "Debes indicar la fecha" }),
     }),
     loadingKey: "sale-form",
-    singular: "venta",
-    plural: "Ventas",
-    placeholder: "Venta",
+    singular: "operación",
+    plural: "Operaicones",
+    placeholder: "Operación",
     href: "washes",
     fields: [
       ({ user, canUpdate }) => (
@@ -157,7 +157,7 @@ export const ENTITIES = {
       ),
     ],
     menu_item: true,
-    menu_item_name: "Ventas",
+    menu_item_name: "Operaciones",
     icon: <CircleDollarSign className={iconsClasses} />,
     show: (role: ROLE, is_developer) => true,
   },
