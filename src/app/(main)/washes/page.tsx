@@ -420,33 +420,6 @@ export default async function Sales({ searchParams }) {
           )}
         </CardContent>
       </Card>
-
-      {(showReports || isManager) && (
-        <DebtReport
-          title="Resumen de ventas"
-          className="mt-3"
-          aquapp_rate={1}
-          debts={reports.debtSummary}
-          sales={reports.salesSummary}
-          gatherings={gatheringsSummary}
-          discounts={reports.discountsSummary}
-          tips={reports.tipsSummary}
-        />
-      )}
-
-      <div className="flex flex-col sm:flex-row w-full gap-1 sm:gap-2 mt-3">
-        {reports.salesByClientType.map((sbc) => (
-          <TotalAmount
-            title={sbc.name}
-            icon={sbc.type}
-            key={sbc.type}
-            data={sbc}
-            className="w-full max-w-full"
-            aquappRate={1}
-            alwaysShow
-          />
-        ))}
-      </div>
     </div>
   );
 }
