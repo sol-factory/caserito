@@ -1593,7 +1593,7 @@ export const mergeCashflowsEvolutionWithRates = (
     let total_spents = 0;
 
     for (const flow of flows) {
-      const coef = flow.kind === "Ingreso" ? 1 : -1;
+      const coef = flow.amount > 0 ? 1 : -1;
       const converted = flow.amount * coef;
       const converted_usd = flow.usd_amount * avg_rate * coef;
       const total = converted + converted_usd;
@@ -1604,11 +1604,11 @@ export const mergeCashflowsEvolutionWithRates = (
       flow.usd_amount_converted = converted_usd;
       flow.total_amount = total;
 
-      if (flow.kind === "Ingreso") {
+      if (flow.amount > 0) {
         total_gathered += total;
         usd_total_gathered += flow.usd_amount;
         total_gatherings += flow.total_count;
-      } else if (flow.kind === "Egreso") {
+      } else if (flow.amount < 0) {
         total_spent += total;
         usd_total_spent += flow.usd_amount;
         total_spents += flow.total_count;

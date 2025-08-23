@@ -464,8 +464,6 @@ export default async function DashboardPage({ searchParams }) {
 
   const cashflowsSummary = await getCashflowsSummary(cashflowsEvolution);
 
-  console.log({ finalCashflowsEvolution });
-
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col md:flex-row sm:items-start gap-3">
