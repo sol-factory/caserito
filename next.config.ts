@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "7jwlofbzaq4pzktn.public.blob.vercel-storage.com",
+        port: "",
+      },
+      {
+        protocol: "https",
         hostname: "aquapp.blob.core.windows.net",
         port: "",
       },

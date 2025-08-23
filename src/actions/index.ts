@@ -109,23 +109,6 @@ export const API_ROUTER = async (
     }
   }
   try {
-    const editing = !!body?.data?._id;
-    const hasUpdateSchema = "updateSchema" in ENTITIES[entity];
-    const shouldUseUpdateSchema =
-      hasUpdateSchema && editing && action !== "setCategory";
-
-    if (action === "upsert" && !shouldUseUpdateSchema) {
-      const finalSchema = Array.isArray(ENTITIES[entity]["createSchema"])
-        ? ENTITIES[entity]["createSchema"][fieldsIndex]
-        : ENTITIES[entity]["createSchema"];
-
-      await finalSchema.parse(body.data);
-    }
-
-    if (shouldUseUpdateSchema) {
-      await ENTITIES[entity]["updateSchema"].parse(body.data);
-    }
-
     result = await ACTIONS[entity][action](body, user);
     return result;
   } catch (error) {

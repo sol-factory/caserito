@@ -493,8 +493,7 @@ export const ENTITIES = {
     menu_item: true,
     menu_item_name: "Personal",
     icon: <UserCog2 className={iconsClasses} />,
-    show: (role: ROLE, is_developer) =>
-      ["Socio"].includes(role) || is_developer,
+    show: (role: ROLE, is_developer) => true,
   },
   wallet: {
     new: (store) => ({
@@ -563,7 +562,7 @@ export const ENTITIES = {
     menu_item: true,
     menu_item_name: "Billeteras",
     icon: <Wallet2 className={iconsClasses} />,
-    show: (role: ROLE, is_developer) => role === "Socio" || is_developer,
+    show: (role: ROLE, is_developer) => true,
   },
   store: {
     new: () => ({
@@ -591,24 +590,12 @@ export const ENTITIES = {
       rowItems: (s) => <StoreRowMenuItems s={s} />,
     },
     createSchema: z.object({
-      address: z
-        .string({ required_error: "Debes indicar una dirección" })
-        .min(3, "La dirección debe tener al menos 3 caracteres"),
-      lat: z
-        .number()
-        .optional()
-        .refine((val) => val === undefined || val !== 0, {
-          message: "Debes elegir una ubicación en el mapa",
-        }),
       allow_pick_up_date: z.boolean(),
     }),
     updateSchema: z.object({
       name: z
         .string({ required_error: "Debes indicar una denominación" })
         .min(3, "La denominación debe tener al menos 3 caracteres"),
-      address: z
-        .string({ required_error: "Debes indicar una dirección" })
-        .min(3, "La dirección debe tener al menos 3 caracteres"),
     }),
     loadingKey: "store-form",
     singular: "sucursal",
@@ -624,7 +611,6 @@ export const ENTITIES = {
             placeholder="Denominación"
             autoFocus={creating}
           />
-          <StoreMap form="store" />
         </>
       ),
       ({ store, user, canUpdate }) => (
@@ -820,8 +806,7 @@ export const ENTITIES = {
     menu_item: true,
     menu_item_name: "Sucursales",
     icon: <MapPin className={iconsClasses} />,
-    show: (role: ROLE, is_developer) =>
-      ["Socio"].includes(role) || is_developer,
+    show: (role: ROLE, is_developer) => true,
   },
   report: {
     new: () => {},

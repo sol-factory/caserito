@@ -37,28 +37,6 @@ export default function SalesTable({ sales, isOwner, user }) {
           <NoRecordsFound text="No se encontraron ventas en esta sucursal" />
         </div>
       )}
-      {!activeSub && isOwner && sales?.length === 0 && (
-        <div className="flex flex-col gap-2  items-center">
-          <TutorialBadge
-            title="Ciclo de Venta 💰"
-            step={4}
-            url="https://youtu.be/lhyAeK5uxiY"
-            custom_id={6}
-          />
-          <TutorialBadge
-            title="Gestión de AGENDA 🗓️"
-            step={5}
-            url="https://youtu.be/AlT1iQndh64"
-            custom_id={7}
-          />
-          <TutorialBadge
-            title="Resetear movimientos (importante)"
-            url="https://youtu.be/ndQGxc_-yEQ"
-            titleFont="font-light"
-            custom_id={8}
-          />
-        </div>
-      )}
     </div>
   );
 }

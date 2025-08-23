@@ -80,8 +80,12 @@ const SaleRow = ({
       >
         <div className="w-48">
           <div className="flex flex-col">
-            <span>{s.category.name}</span>
-            <span>{s.sub_category.name}</span>
+            <span className="text-blue-600 font-bold">
+              {s.sub_category.name}
+            </span>
+            <span className="text-muted-foreground text-xs font-light">
+              {s.category.name}
+            </span>
 
             <div className="flex items-center gap-2 text-blue-600">
               <div

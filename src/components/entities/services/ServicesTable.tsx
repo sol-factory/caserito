@@ -38,15 +38,6 @@ export default function ServicesTable({ services }) {
           <div className="mb-5 mt-2 animate-bounce-slow">
             <ArrowDown />
           </div>
-
-          <div className="flex flex-col gap-2  items-center">
-            <TutorialBadge
-              title="Crear SERVICIOS 🛎️ (y definir PRECIOS 💲)"
-              step={2}
-              url="https://youtu.be/jcY5ItMP5V8"
-              custom_id={3}
-            />
-          </div>
         </div>
       )}
     </>

@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import AttachmentsCounter from "../attachments/AttachmentsCounter";
 import MyInfoTooltip from "@/components/custom-ui/MyInfoTooltip";
+import { getWalletUrl } from "@/helpers/ui";
 
 const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
   const { isOwner } = usePermissions();
@@ -30,7 +31,7 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
           <div className="flex flex-col sm:flex-row">
             <div className="flex flex-col items-center sm:min-w-10">
               <Image
-                src={c.wallet.logo_url}
+                src={getWalletUrl(c.wallet)}
                 alt="Logo marca"
                 width={25}
                 height={25}
@@ -81,9 +82,9 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
           </div>
         </div>
         <div className="flex flex-col items-end sm:items-start w-full  sm:min-w-48">
-          <span className="font-bold">{c.category.name}</span>
-          <span className="text-blue-600 font-extralight text-nowrap">
-            {c.sub_category.name}
+          <span className="font-bold text-blue-600">{c.sub_category.name}</span>
+          <span className="text-muted-foreground font-light text-nowrap">
+            {c.category.name}
           </span>
           {c?.client?.name && (
             <div className="flex items-center gap-1 ">

@@ -59,80 +59,8 @@ const AsideItem = ({ text, href, icon }: Props) => {
           isSelected ? " bg-gray-100" : ""
         } ${text === "Tutoriales" ? "mt-auto" : ""}`}
       >
-        {!["Tutoriales", "Plantillas"].includes(text) && icon}
-        {text === "Tutoriales" && (
-          <Image
-            src={`${CONFIG.blob_url}/youtube.png`}
-            className="w-5"
-            width={17}
-            height={17}
-            alt="Image"
-          />
-        )}
-        {text === "Plantillas" && (
-          <Image
-            src={`${CONFIG.blob_url}/whatsapp.png`}
-            className="w-[1.45rem]  -ml-0.5"
-            width={20}
-            height={20}
-            alt="Image"
-          />
-        )}
-
         <span>{text}</span>
       </div>
-      {text === "Suscripción" && sub && sub?.active && (
-        <>
-          <div className="flex items-center gap-1 mb-1 pl-10">
-            <Image
-              src={`${CONFIG.blob_url}/whatsapp.png`}
-              alt=""
-              width={16}
-              height={16}
-              className="w-3.5 cursor-pointer -ml-0.5"
-            />
-            <Progress
-              value={(sub?.messages_count / sub?.messages) * 100}
-              className="!w-12 bg-gray-50 !h-2.5 ring-[0.5px] ring-gray-300"
-            />
-            <span className="text-[0.65rem]">
-              {sub?.messages_count} / {sub?.messages}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 mb-1 pl-10">
-            <Image
-              src={`${CONFIG.blob_url}/pdf2.png`}
-              alt=""
-              width={14}
-              height={14}
-              className="w-3.5 cursor-pointer -ml-0.5"
-            />
-            <Progress
-              value={(sub?.quotes_count / sub?.quotes) * 100}
-              className="!w-12 bg-gray-50 !h-2.5 ring-[0.5px] ring-gray-300"
-            />
-            <span className="text-[0.65rem]">
-              {sub?.quotes_count} / {sub?.quotes}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 mb-1 pl-10">
-            <Image
-              src={`${CONFIG.blob_url}/attachment.png`}
-              alt=""
-              width={14}
-              height={14}
-              className="w-3.5 cursor-pointer -ml-0.5"
-            />
-            <Progress
-              value={(sub?.files_count / sub?.files) * 100}
-              className="!w-12 bg-gray-50 !h-2.5 ring-[0.5px] ring-gray-300"
-            />
-            <span className="text-[0.65rem]">
-              {sub?.files_count} / {sub?.files}
-            </span>
-          </div>
-        </>
-      )}
     </div>
   );
 };

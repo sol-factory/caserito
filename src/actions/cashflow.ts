@@ -410,9 +410,8 @@ export const getSubCategories = async ({ filterId, searchText }, user) => {
   };
   if (filterId) {
     matchStage["category._id"] = toObjectId(filterId);
-  } else {
-    matchStage["category.name"] = { $in: ["Inversión", "Gasto"] };
   }
+  console.log({ filterId });
 
   if (!!searchText) {
     const regex = cleanRegExp(searchText);

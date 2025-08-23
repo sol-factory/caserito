@@ -67,18 +67,6 @@ export default async function Wallets({ searchParams }) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-xl">Billeteras</CardTitle>
-            {wallets.length === 1 && (
-              <div className="flex flex-col items-center mt-1">
-                <div className="flex flex-col gap-2  items-center">
-                  <TutorialBadge
-                    title="¿Dónde podría ingresar el dinero? 🤔"
-                    step={3}
-                    url="https://youtu.be/p4kuLPtOdL0"
-                    custom_id={4}
-                  />
-                </div>
-              </div>
-            )}
           </div>
           <MyFormDialog form="wallet" />
         </div>

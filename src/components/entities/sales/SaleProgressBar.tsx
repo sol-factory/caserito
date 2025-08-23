@@ -25,7 +25,7 @@ export const SaleProgressBar = ({
   return (
     <div>
       {showAmount && (
-        <span className="block -mb-0.5 text-end">
+        <span className="block mb-1 text-end">
           {toMoney(netAmount, false, false, currencySign)}
         </span>
       )}

@@ -38,7 +38,6 @@ const StoreRowMenuItems = ({ s }) => {
                   pre_name: `${CONFIG.blob_url}/whatsapp.png`,
                 }
               : {},
-            canUpdate: isOwner,
           });
           update("openDialog", "store");
           update("openDialogIndex", 0);

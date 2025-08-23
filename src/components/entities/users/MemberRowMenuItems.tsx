@@ -33,7 +33,7 @@ const MemberRowMenuItems = ({ m, companyName }) => {
       country,
       formatted_number: m.formatted_number,
       phone: m.phone,
-      canUpdate: isOwner,
+      canUpdate: true,
     });
     update("openDialog", "member");
     update("creating", false);

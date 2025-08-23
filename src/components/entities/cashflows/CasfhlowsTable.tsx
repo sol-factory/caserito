@@ -57,14 +57,6 @@ export default function CasfhlowsTable({ user, cashflows }) {
       ) : (
         <div className="flex flex-col items-center">
           <NoRecordsFound text="No se encontró ningún egreso" />
-
-          <TutorialBadge
-            title="Flujos de dinero del negocio 💰"
-            url="https://youtu.be/2Neg8h1dYN0"
-            className="-mt-2 mb-4"
-            custom_id={12}
-            onlyOwners
-          />
         </div>
       )}
     </>

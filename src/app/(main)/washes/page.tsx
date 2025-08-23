@@ -16,7 +16,11 @@ import {
 import { MyFormDialog } from "@/components/custom-ui/MyFormDialog";
 import SaleCashflowsTable from "@/components/entities/cashflows/SaleCashflowsTable";
 import { getDateRange, getPeriodFilter, getUserDate } from "@/helpers/date";
-import { CashflowModel } from "@/schemas/cashflow";
+import {
+  CashflowCategoryModel,
+  CashflowModel,
+  CashflowSubCategoryModel,
+} from "@/schemas/cashflow";
 import { RankingBars } from "@/components/entities/reports/RankingBars";
 import { CONFIG } from "@/config/constanst";
 import { RankingTexts } from "@/components/entities/reports/RankingTexts";
