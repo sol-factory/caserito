@@ -54,7 +54,7 @@ export default function LoginForm() {
     console.log({ result });
 
     if (result?.ok) {
-      router.push(result.redirectTo);
+      window.location.replace(result.redirectTo);
       reset("company");
       update("creating", true);
       setTimeout(() => {
