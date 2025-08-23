@@ -45,6 +45,8 @@ export default function LoginForm() {
     const res: any = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify({ email: email.trim(), code }),
+      credentials: "same-origin",
+      cache: "no-store",
       headers: { "Content-Type": "application/json" },
     });
     const result = await res.json();
