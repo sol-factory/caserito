@@ -29,9 +29,8 @@ import AttachmentsTable from "@/components/entities/attachments/AttachmentsTable
 import CommentsTable from "@/components/entities/comments/CommentsTable";
 
 export const metadata: Metadata = {
-  title: "Aquapp",
-  description:
-    "El Software de gestión ideal para negocios que brindan servicios de lavado y/o detailing a vehículos de clientes.",
+  title: "Caserito",
+  description: "App creada para ayudar al gate con las tareas del case.",
 };
 
 export default async function AppLayout({ children }) {
