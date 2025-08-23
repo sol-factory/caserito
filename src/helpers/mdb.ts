@@ -1642,17 +1642,13 @@ export const getWalletsSummaryAggregation = (matchStage = {}) => {
         currency: { $first: "$wallet.currency" },
         gathered: {
           $sum: {
-            $cond: [
-              { $eq: ["$kind", "Ingreso"] },
-              { $ifNull: ["$amount", 0] },
-              0,
-            ],
+            $cond: [{ $gt: ["$amount", 0] }, { $ifNull: ["$amount", 0] }, 0],
           },
         },
         spent: {
           $sum: {
             $cond: [
-              { $eq: ["$kind", "Egreso"] },
+              { $lt: ["$amount", 0] },
               { $ifNull: [{ $multiply: ["$amount", -1] }, 0] },
               0,
             ],
@@ -1660,12 +1656,12 @@ export const getWalletsSummaryAggregation = (matchStage = {}) => {
         },
         gatherings: {
           $sum: {
-            $cond: [{ $eq: ["$kind", "Ingreso"] }, 1, 0],
+            $cond: [{ $gt: ["$amount", 0] }, 1, 0],
           },
         },
         spents: {
           $sum: {
-            $cond: [{ $eq: ["$kind", "Egreso"] }, 1, 0],
+            $cond: [{ $lt: ["$amount", 0] }, 1, 0],
           },
         },
       },
@@ -1843,15 +1839,14 @@ export const getCashflowsSummary = (
   const summaryMap = new Map();
 
   for (const flow of cashflowsEvolution) {
-    const key = `${flow.kind}-${flow.category.name}-${flow.sub_category.name}`;
+    const key = `${flow.category.name}-${flow.sub_category.name}`;
 
     const amount_converted = flow.amount;
-    const usd_amount_converted = flow.usd_amount * flow.avg_rate;
+    const usd_amount_converted = flow.usd_amount * 1;
     const total = amount_converted + usd_amount_converted;
 
     if (!summaryMap.has(key)) {
       summaryMap.set(key, {
-        kind: flow.kind,
         category: flow.category,
         sub_category: flow.sub_category,
         amount: 0,
@@ -1878,7 +1873,7 @@ export const getCashflowsSummary = (
     entry.total_amount += total;
     entry.total_count += flow.total_count;
     entry.total_usd_amount += flow.usd_amount;
-    entry.avg_rate = flow.avg_rate;
+    entry.avg_rate = 1;
     entry.id = key;
   }
 

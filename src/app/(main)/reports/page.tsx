@@ -56,7 +56,7 @@ export default async function DashboardPage({ searchParams }) {
   const useAvgAquappRate = !period?.includes("year");
   let avg_aquapp_rate;
   if (useAvgAquappRate) {
-    avg_aquapp_rate = await getAvgExchangeRateForPeriod(period);
+    avg_aquapp_rate = 1;
   }
 
   const salesEvolutionPipeline = getSalesEvolutionAggregation(period) as any;
@@ -70,16 +70,7 @@ export default async function DashboardPage({ searchParams }) {
   let finalSalesEvolution = mergeSalesEvolutionWithRates(
     salesEvolution,
     aquappRates,
-    avg_aquapp_rate
-  );
-
-  const stores = await StoreModel.find(
-    { company_id: user.company._id, deleted: false },
-    { _id: { $toString: "$_id" }, name: 1 }
-  ).lean();
-  const storesSummary = getStoresSummaryFromEvolution(
-    finalSalesEvolution,
-    stores
+    1
   );
 
   if (!!store_id) {
@@ -470,108 +461,13 @@ export default async function DashboardPage({ searchParams }) {
     cashflowsEvolution,
     aquappRates
   );
-  const summary = getSalesSummaryFromEvolution(finalSalesEvolution);
 
   const cashflowsSummary = await getCashflowsSummary(cashflowsEvolution);
 
-  let workers = [],
-    salaries = [];
-  if (monthlyPeriod) {
-    workers = await MemberModel.find(
-      {
-        "stores._id": user.store._id,
-        $or: [
-          { "payment_scheme.sales_percentage": { $gt: 0 } },
-          { "payment_scheme.fixed_salary": { $gt: 0 } },
-        ],
-      },
-      "user payment_scheme"
-    );
-    salaries = enrichSalariesWithWorkerData(reports.salaries, workers);
-  }
+  console.log({ finalCashflowsEvolution });
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col sm:flex-row items-start gap-3">
-        <DebtReport
-          title="Resumen de ventas"
-          aquapp_rate={avg_aquapp_rate}
-          debts={summary.debtSummary}
-          sales={{ ...summary.salesSummary, preText: " con monto" }}
-          gatherings={summary.gatheringsSummary}
-          discounts={summary.discountsSummary}
-          tips={summary.tipsSummary}
-          period={period}
-        />
-        {storesSummary?.length > 1 && (
-          <RankingTexts
-            items={storesSummary}
-            title="Ranking por sucursal"
-            preText="Distribución de los"
-            afterText="de ventas netas"
-            exchange_rate={avg_aquapp_rate}
-            param="store_id"
-            paramValueField="_id"
-            className="w-full"
-          />
-        )}
-      </div>
-      <SalesEvolutionChart
-        data={companySalesEvolution}
-        chartConfig={{
-          total_amount: {
-            label: "Ventas",
-            color: "hsl(var(--chart-1))",
-            countKey: "total_count",
-          },
-        }}
-        monthlyGroup={period?.includes("year")}
-      />
-
-      <div className="flex flex-col sm:flex-row w-full gap-1 sm:gap-2">
-        {getClientTypeReport(reports.salesByClientType).map((sbc) => (
-          <TotalAmount
-            title={sbc.name}
-            icon={sbc.type}
-            key={sbc.type}
-            data={sbc}
-            className="w-full max-w-full"
-            aquappRate={avg_aquapp_rate}
-            alwaysShow
-          />
-        ))}
-      </div>
-      <div className="flex flex-col lg:flex-row lg:items-start gap-3">
-        <RankingTexts
-          items={reports.salesByService}
-          title="Ranking de servicios"
-          preText="Distribución de los"
-          afterText="de ventas brutas"
-          exchange_rate={avg_aquapp_rate}
-          className="w-full"
-        />
-        {monthlyPeriod && <WorkersWage salaries={salaries} />}
-      </div>
-
-      <div className="flex flex-col lg:flex-row lg:items-start gap-3">
-        <RankingBars
-          items={reports.salesByBrand}
-          folder="brands"
-          title="Ranking de marcas"
-          entityName="cobro"
-          preText="Distribución de los"
-          afterText="de ventas netas de descuentos"
-          exchange_rate={avg_aquapp_rate}
-        />
-        <RankingTexts
-          items={reports.salesByVehicleKind}
-          title="Ranking de vehículos"
-          preText="Distribución de los"
-          afterText="de ventas netas de descuentos"
-          exchange_rate={avg_aquapp_rate}
-        />
-      </div>
-
       <div className="flex flex-col md:flex-row sm:items-start gap-3">
         <CashflowsSummary
           cashflowsSummary={cashflowsSummary}
