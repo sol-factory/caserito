@@ -19,7 +19,6 @@ import { getBooleanRoles } from "@/helpers/permissions";
 import { notify } from "@/helpers/notify";
 import { CONFIG, COUNTRIES } from "@/config/constanst";
 import ResetSalesMenuItem from "../sales/ResetSalesMenuItem";
-import useSubscription from "@/hooks/use-subscription";
 import api from "@/helpers/api";
 import Image from "next/image";
 import { UAParser } from "ua-parser-js";
@@ -31,12 +30,10 @@ const DEVICES = {
 };
 
 const UserMenu = ({ user }) => {
-  const sub = useSubscription();
   const update = useStore((s) => s.update);
   const router = useRouter();
 
   const { isOwner } = usePermissions();
-  const activeSub = !!sub?.active;
 
   return (
     <DropdownMenu>
@@ -114,7 +111,7 @@ const UserMenu = ({ user }) => {
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
-        {isOwner && !activeSub && (
+        {isOwner && (
           <DropdownMenuItem
             className="gap-3 cursor-pointer"
             onClick={() => {
@@ -122,17 +119,9 @@ const UserMenu = ({ user }) => {
               update("openMenu", "");
             }}
           >
-            <CreditCard />
-            <div className="flex flex-col">
-              <span>Contratar suscripción</span>
-              <FreeTrialState
-                trial_start_date={sub?.trial_start_date}
-                activeSub={!!sub?.active}
-              />
-            </div>
+            <CreditCard />¿
           </DropdownMenuItem>
         )}
-        {isOwner && !activeSub && <ResetSalesMenuItem />}
 
         <DropdownMenuItem
           className="gap-3 cursor-pointer"

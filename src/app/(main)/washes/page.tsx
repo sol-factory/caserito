@@ -434,71 +434,19 @@ export default async function Sales({ searchParams }) {
         />
       )}
 
-      {(showReports || isManager) && (
-        <div className="flex flex-col sm:flex-row w-full gap-1 sm:gap-2 mt-3">
-          {reports.salesByClientType.map((sbc) => (
-            <TotalAmount
-              title={sbc.name}
-              icon={sbc.type}
-              key={sbc.type}
-              data={sbc}
-              className="w-full max-w-full"
-              aquappRate={1}
-              alwaysShow
-            />
-          ))}
-        </div>
-      )}
-
-      {showReports && (
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col md:flex-row sm:items-start gap-3 mt-3">
-            <RankingBars
-              items={reports.salesByBrand}
-              folder="brands"
-              title="Ranking de marcas"
-              entityName="cobro"
-              preText="Distribución de los"
-              afterText="de ventas netas de descuentos"
-              exchange_rate={1}
-            />
-            <WalletsGatherings gatheredByWallet={gatheredByWallet} />
-          </div>
-          <div className="flex flex-col lg:flex-row lg:items-start gap-3">
-            <RankingTexts
-              items={reports.salesByVehicleKind}
-              title="Ranking de vehículos"
-              preText="Distribución de los"
-              afterText="de ventas netas de descuentos"
-              exchange_rate={1}
-            />
-            <RankingTexts
-              items={reports.salesByService}
-              title="Ranking de servicios"
-              preText="Distribución de los"
-              afterText="de ventas brutas"
-              exchange_rate={1}
-            />
-          </div>
-
-          <div className="flex flex-col lg:flex-row lg:items-start gap-3">
-            <WorkersWage
-              salaries={reports.salaries}
-              cycle={weekly ? "weekly" : "daily"}
-            />
-          </div>
-        </div>
-      )}
-      {store?.allow_sale_color && showReports && (
-        <RankingTexts
-          items={reports.salesByColor}
-          title="Ranking por colores"
-          preText="Distribución de los"
-          afterText="cobrados"
-          className="mt-3 w-full max-w-full"
-          exchange_rate={1}
-        />
-      )}
+      <div className="flex flex-col sm:flex-row w-full gap-1 sm:gap-2 mt-3">
+        {reports.salesByClientType.map((sbc) => (
+          <TotalAmount
+            title={sbc.name}
+            icon={sbc.type}
+            key={sbc.type}
+            data={sbc}
+            className="w-full max-w-full"
+            aquappRate={1}
+            alwaysShow
+          />
+        ))}
+      </div>
     </div>
   );
 }

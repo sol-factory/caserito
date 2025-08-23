@@ -1,7 +1,6 @@
 "use client";
 
 import { CONFIG } from "@/config/constanst";
-import useSubscription from "@/hooks/use-subscription";
 import { useStore } from "@/stores";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -20,7 +19,6 @@ const AsideItem = ({ text, href, icon }: Props) => {
   const { can_view_quote, can_view_service, can_view_cashflow } =
     usePermissions();
   const globalSearchText = useStore((s) => s.globalSearchText);
-  const sub = useSubscription();
 
   const update = useStore((s) => s.update);
   const path = usePathname();

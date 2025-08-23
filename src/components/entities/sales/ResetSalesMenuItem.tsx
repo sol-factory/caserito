@@ -6,10 +6,8 @@ import { useStore } from "@/stores";
 import { RotateCcw } from "lucide-react";
 import React from "react";
 import FreeTrialState from "../users/FreeTrialState";
-import useSubscription from "@/hooks/use-subscription";
 
 const ResetSalesMenuItem = () => {
-  const sub = useSubscription();
   const update = useStore((s) => s.update);
 
   const handleResetSales = async () => {

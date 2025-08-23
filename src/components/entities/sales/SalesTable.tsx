@@ -2,14 +2,10 @@
 import NoRecordsFound from "@/components/custom-ui/NoRecordsFound";
 import SaleRow from "./SaleRow";
 import TutorialBadge from "@/components/custom-ui/TutorialBadge";
-import useSubscription from "@/hooks/use-subscription";
 import { useStore } from "@/stores";
 
 export default function SalesTable({ sales, isOwner, user }) {
-  const sub = useSubscription();
   const current_store = useStore((s) => s.current_store);
-
-  const activeSub = !!sub?.active;
 
   return (
     <div className="!z-0">
