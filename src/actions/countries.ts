@@ -1,11 +1,7 @@
 import CountryModel from "@/schemas/countries";
-import { getItemsProps } from "./service";
 import { UserModel } from "@/schemas/user";
 
-export const getItems = async (
-  { filterId, searchText }: getItemsProps,
-  user
-) => {
+export const getItems = async ({ filterId, searchText }, user) => {
   let pipeline = [];
   const userDB = await UserModel.findById(user._id, "geo");
 

@@ -1,6 +1,5 @@
 import { cleanRegExp, cleanText, pluralize } from "@/helpers/text";
 import { revalidatePath } from "next/cache";
-import { getItemsProps } from "./service";
 import StoreModel from "@/schemas/store";
 import {
   abortTransaction,
@@ -371,10 +370,7 @@ export const remove = async (_id: string, user) => {
   }
 };
 
-export const getItems = async (
-  { filterId, searchText }: getItemsProps,
-  user
-) => {
+export const getItems = async ({ filterId, searchText }, user) => {
   let pipeline: any = [
     { $match: { deleted: false, ...getWorkplace(user, true) } },
   ];

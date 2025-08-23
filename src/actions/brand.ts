@@ -1,7 +1,6 @@
 import { cleanRegExp, cleanText, toSlug } from "@/helpers/text";
 import BrandModel from "@/schemas/brand";
 import { revalidatePath } from "next/cache";
-import { getItemsProps } from "./service";
 import { upsertBlob } from "@/helpers/blobs";
 
 export const upsert = async ({ data, form }) => {
@@ -40,7 +39,7 @@ export const remove = async (_id: string, user) => {
   return { ok: true, message: "Marca eliminada" };
 };
 
-export const getItems = async ({ filterId, searchText }: getItemsProps) => {
+export const getItems = async ({ filterId, searchText }) => {
   const pipeline = [];
 
   const matchStage = { deleted: false };

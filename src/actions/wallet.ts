@@ -1,6 +1,5 @@
 import { cleanRegExp } from "@/helpers/text";
 import { revalidatePath } from "next/cache";
-import { getItemsProps } from "./service";
 import WalletModel, { WalletClosureModel } from "@/schemas/wallet";
 import {
   abortTransaction,

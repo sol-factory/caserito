@@ -8,7 +8,6 @@ import {
   generateTokenPayload,
 } from "@/helpers/auth";
 import { generateLoginCode, sendLoginCode } from "@/helpers/email";
-import { getItemsProps } from "./service";
 import { upsertBlob } from "@/helpers/blobs";
 import connectDB from "@/lib/connectDB";
 import { MemberModel } from "@/schemas/member";
@@ -79,7 +78,7 @@ export const remove = async (_id: string) => {
   revalidatePath("/");
 };
 
-export const getItems = async ({ filterId, searchText }: getItemsProps) => {
+export const getItems = async ({ filterId, searchText }) => {
   let pipeline = [];
   const matchStage = {};
 

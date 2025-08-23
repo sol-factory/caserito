@@ -14,22 +14,14 @@ import * as client from "./client";
 import * as attachment from "./attachment";
 import * as comment from "./comment";
 import * as company from "./company";
-import * as discount from "./discount";
 import * as institution from "./institution";
 import * as member from "./member";
 import * as report from "./report";
 import * as role from "./role";
-import * as quote from "./quote";
 import * as sale from "./sale";
 import * as screen from "./screen";
-import * as service from "./service";
 import * as store from "./store";
-import * as subscriptionPlan from "./subscription-plan";
-import * as subscription from "./subscription";
-import * as tutorial from "./tutorial";
 import * as user from "./user";
-import * as vehicleKind from "./vehicle-kind";
-import * as vehicle from "./vehicle";
 import * as wallet from "./wallet";
 import { SubscriptionModel } from "@/schemas/subscription";
 
@@ -41,22 +33,14 @@ const ACTIONS = {
   client,
   comment,
   company,
-  discount,
   institution,
   member,
-  quote,
   report,
   role,
   sale,
   screen,
-  service,
   store,
-  "subscription-plan": subscriptionPlan,
-  subscription,
-  tutorial,
   user,
-  "vehicle-kind": vehicleKind,
-  vehicle,
   wallet,
 };
 

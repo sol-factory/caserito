@@ -7,7 +7,6 @@ import {
 import { SaleModel } from "@/schemas/sale";
 import { Types } from "mongoose";
 import { revalidatePath } from "next/cache";
-import { getItemsProps } from "./service";
 import {
   abortTransaction,
   commitTransaction,
@@ -266,7 +265,7 @@ export const transfer = async ({ data }, user) => {
   }
 };
 
-export const getGatherings = async ({ filterId }: getItemsProps) => {
+export const getGatherings = async ({ filterId }) => {
   return await CashflowModel.aggregate([
     { $match: { sale_id: new Types.ObjectId(filterId) } },
     {

@@ -1,8 +1,6 @@
 import { cleanRegExp, cleanText, toSlug } from "@/helpers/text";
 import { ClientModel } from "@/schemas/client";
-import { VehicleModel } from "@/schemas/vehicle";
 import { revalidatePath } from "next/cache";
-import { getItemsProps } from "./service";
 import {
   abortTransaction,
   commitTransaction,
@@ -11,8 +9,6 @@ import {
 } from "@/helpers/mdb";
 import { SaleModel } from "@/schemas/sale";
 import CompanyModel from "@/schemas/company";
-import { QuoteModel } from "@/schemas/quote";
-import { CONFIG } from "@/config/constanst";
 
 export const upsert = async ({ data }, user) => {
   const {
@@ -144,10 +140,7 @@ export const remove = async (_id: string, user) => {
   }
 };
 
-export const getItems = async (
-  { filterId, searchText }: getItemsProps,
-  user
-) => {
+export const getItems = async ({ filterId, searchText }, user) => {
   const pipeline = [];
   const matchStage = { ...getWorkplace(user, true), deleted: false };
 
