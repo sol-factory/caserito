@@ -163,6 +163,7 @@ export const login = async ({ email, code }) => {
           }
         : null
     );
+    console.log({ payload });
 
     await createJWTandSession(payload);
 
