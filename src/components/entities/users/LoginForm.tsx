@@ -32,6 +32,7 @@ export default function LoginForm() {
       "user",
       "getLoginCode"
     );
+    console.log({ response });
     if (response?.ok) {
       setShowCodeInput(true);
     }
