@@ -48,6 +48,8 @@ export default function LoginForm() {
     });
     const result = await res.json();
 
+    console.log({ result });
+
     if (result?.ok) {
       router.push(result.redirectTo);
       reset("company");
