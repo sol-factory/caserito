@@ -80,7 +80,7 @@ export default function LoginForm() {
   }, []);
 
   return (
-    <div id="login" className="grid gap-4 px-4">
+    <form id="login" className="grid gap-4 px-4">
       <div className="flex flex-col gap-3">
         <MyInput
           id="email"
@@ -139,7 +139,6 @@ export default function LoginForm() {
         <div className="flex flex-col  justify-center items-center">
           <Button
             id="login-btn"
-            type="button"
             translate="no"
             onClick={handleLogin}
             disabled={loading === "login" || !code || String(code).length !== 6}
@@ -164,6 +163,6 @@ export default function LoginForm() {
           </p>
         </div>
       )}
-    </div>
+    </form>
   );
 }
