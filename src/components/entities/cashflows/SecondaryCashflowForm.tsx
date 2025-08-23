@@ -4,10 +4,7 @@ import { DatePicker } from "@/components/custom-ui/DatePicker";
 import MultiSelect from "@/components/custom-ui/MultiSelect";
 import MyInput from "@/components/custom-ui/MyInput";
 import useFlags from "@/hooks/use-falgs";
-import { differenceInCalendarDays } from "date-fns";
-import CancellingAmount from "./CancellingAmount";
 import MyTextArea from "@/components/custom-ui/MyTextArea";
-import ToogleCashflowKind from "./ToggleCashflowKind";
 
 const SecondaryCashflowForm = ({ user, creating, canUpdate, canCreate }) => {
   const { getFlag } = useFlags();
@@ -23,22 +20,6 @@ const SecondaryCashflowForm = ({ user, creating, canUpdate, canCreate }) => {
         // toDate={addDays(new Date(), 6)}
       />
 
-      <MultiSelect
-        id="cashflow-client"
-        entity="client"
-        form="cashflow"
-        field="client"
-        searchPlaceholder="Buscar por nombre, celular o patente..."
-        idToFocusAfterSelection="select-wallet"
-        monitorField="sub_category"
-        shouldHide={(sub_category) =>
-          !["Venta de productos", "Membresías"].includes(sub_category?.name)
-        }
-        resetOnSelect="vehicle"
-        justOne
-        propercase
-        disabled={!canUpdate}
-      />
       <MultiSelect
         id="select-wallet"
         form="cashflow"

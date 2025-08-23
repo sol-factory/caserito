@@ -16,11 +16,7 @@ import {
 import { MyFormDialog } from "@/components/custom-ui/MyFormDialog";
 import SaleCashflowsTable from "@/components/entities/cashflows/SaleCashflowsTable";
 import { getDateRange, getPeriodFilter, getUserDate } from "@/helpers/date";
-import {
-  CashflowCategoryModel,
-  CashflowModel,
-  CashflowSubCategoryModel,
-} from "@/schemas/cashflow";
+import { CashflowModel } from "@/schemas/cashflow";
 import { RankingBars } from "@/components/entities/reports/RankingBars";
 import { CONFIG } from "@/config/constanst";
 import { RankingTexts } from "@/components/entities/reports/RankingTexts";
@@ -34,7 +30,6 @@ import {
   startOfWeek,
 } from "date-fns";
 import StoreModel from "@/schemas/store";
-import WeeklySales from "@/components/entities/sales/WeeklySales";
 import DebtReport from "@/components/entities/reports/DebtReport";
 import WorkersWage from "@/components/entities/reports/WorkersWage";
 import { TotalAmount } from "@/components/entities/reports/TotalAmount";
@@ -422,14 +417,6 @@ export default async function Sales({ searchParams }) {
           )}
           {(!weekly || debtsView) && (
             <SalesTable sales={sales} isOwner={isOwner} user={user} />
-          )}
-          {weekly && (
-            <WeeklySales
-              weekSales={sales}
-              staying_cars={[]}
-              date={finalDate}
-              companyName={user?.company.name}
-            />
           )}
         </CardContent>
       </Card>

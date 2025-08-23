@@ -1,27 +1,13 @@
 "use client";
 import DropdownRow from "@/components/custom-ui/DropdownRow";
 import { CONFIG } from "@/config/constanst";
-import { timeAgo } from "@/helpers/date";
 import { canFinish, canReactivate } from "@/helpers/permissions";
-import { capitalizeFirstLetter, toSlug } from "@/helpers/text";
 import { getMenuItemsCount } from "@/helpers/ui";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import {
-  Bell,
-  Clock,
-  IdCard,
-  LogIn,
-  LogOut,
-  MessageCircle,
-  Paperclip,
-} from "lucide-react";
+import { Clock, LogIn, LogOut, MessageCircle, Paperclip } from "lucide-react";
 import Image from "next/image";
-import SaleAddress from "./SaleAddress";
-import Workers from "./Workers";
 import usePermissions from "@/hooks/use-permissions";
-import ClientName from "../clients/ClientName";
-import MyInfoTooltip from "@/components/custom-ui/MyInfoTooltip";
 import { SaleProgressBar } from "./SaleProgressBar";
 
 const SaleRow = ({
