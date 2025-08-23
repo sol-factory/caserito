@@ -903,7 +903,7 @@ export const getCashflowsReports = (cashflows, exchange_rate) => {
   for (const item of cashflows) {
     const { kind, category, sub_category, amount, wallet, usd_items } = item;
 
-    const coef = kind === "Ingreso" ? 1 : -1;
+    const coef = category.name === "VENTA" ? 1 : -1;
     const arsAmount = wallet.currency !== "usd" ? amount * coef || 0 : 0;
     const usdAmount = wallet.currency === "usd" ? amount * coef || 0 : 0;
     const arsCount = wallet.currency !== "usd" ? 1 || 0 : 0;
@@ -995,6 +995,48 @@ export const getCashflowsReports = (cashflows, exchange_rate) => {
 
   return reports;
 };
+
+export function groupReportsByCategory(reports) {
+  const map = new Map<string, any>();
+
+  for (const r of reports) {
+    const key = r.category?._id ?? r.category?.name ?? "unknown";
+
+    const acc = map.get(key) || {
+      category: r.category,
+      // totales por categoría
+      count: 0,
+      amount: 0,
+      amount_converted: 0,
+      total_count: 0,
+      total_amount: 0,
+      // para ver el detalle de subcategorías (opcional)
+      subcategories: [] as any[],
+    };
+
+    acc.count += r.count ?? 0;
+    acc.amount += r.amount ?? 0;
+    acc.amount_converted += r.amount_converted ?? 0;
+    acc.total_count += r.total_count ?? 0;
+    acc.total_amount += r.total_amount ?? 0;
+
+    acc.subcategories.push({
+      _id: r.sub_category?._id,
+      name: r.sub_category?.name,
+      count: r.count ?? 0,
+      amount: r.amount ?? 0,
+      amount_converted: r.amount_converted ?? 0,
+      total_count: r.total_count ?? 0,
+      total_amount: r.total_amount ?? 0,
+    });
+
+    map.set(key, acc);
+  }
+
+  return Array.from(map.values()).sort(
+    (a, b) => (b.total_amount ?? 0) - (a.total_amount ?? 0)
+  );
+}
 
 export function initSummary() {
   return {

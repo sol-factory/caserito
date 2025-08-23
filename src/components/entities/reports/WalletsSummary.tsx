@@ -39,22 +39,7 @@ const WalletsSummary = ({
               : "text-chart-1";
 
         const currenctSign = getCurrencySign(w.currency);
-        // Solo se puede hacer cierre si es el último día en que hubo movimientos
-        const lastCashflow = lastCashflows.find((c) => c?.wallet_id === w._id);
-        const closureAllowed =
-          !!date &&
-          !!lastCashflow &&
-          differenceInCalendarDays(lastCashflow?.date, date) === 0;
-
-        let closure = null;
-
-        closure = closures.find(
-          (c) =>
-            c.wallet_id === w._id &&
-            c.full_date.day === dayFilters["full_date.day"] &&
-            c.full_date.month === dayFilters["full_date.month"] &&
-            c.full_date.year === dayFilters["full_date.year"]
-        );
+        // Solo se puede hacer cierre si es el último día en que hubo movimiento
 
         const isSelected = selected_wallet?._id === w._id;
 
@@ -129,42 +114,6 @@ const WalletsSummary = ({
                 </div>
               </div>
             </CardContent>
-
-            {closureAllowed && !closure && (
-              <CardFooter>
-                <span
-                  className="font-extralight text-xs text-blue-600 hover:underline cursor-pointer"
-                  onClick={() => {
-                    update("openDialog", "wallet");
-                    update("openDialogIndex", 1);
-                    update("creating", true);
-                    update("wallet", {
-                      ...w,
-                      date,
-                      counted_closing: null,
-                      closure_comment: "",
-                      dayFilters,
-                      current_balance:
-                        storeWalletsBalances.find((sw) => sw._id === w._id)
-                          ?.balance || 0,
-                    });
-                  }}
-                >
-                  Realizar cierre diario
-                </span>
-              </CardFooter>
-            )}
-            <ClosureDetail
-              closure={closure}
-              closureAllowed={closureAllowed}
-              w={w}
-              dayFilters={dayFilters}
-              current_balance={
-                storeWalletsBalances.find((sw) => sw._id === w._id)?.balance ||
-                0
-              }
-              currenctSign={currenctSign}
-            />
           </Card>
         );
       })}

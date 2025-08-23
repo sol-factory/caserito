@@ -52,7 +52,7 @@ const SaleCashflowsTable = () => {
 
   const amount = sale[amountField];
   const discountsAmount = sale[discountsAmountField];
-  const saleNetAmount = amount - discountsAmount;
+  const saleNetAmount = amount;
 
   const gathered =
     activeCashflows?.reduce((prev, curr) => prev + curr.cancelling_amount, 0) ||

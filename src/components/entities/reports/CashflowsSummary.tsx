@@ -12,6 +12,71 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Separator } from "react-aria-components";
 import CashflowSummaryUSDTooltip from "./CashflowSummaryUSDTooltip";
 
+const lower = (s) => String(s || "").toLowerCase();
+
+const isInvestmentName = (name) => {
+  const n = lower(name);
+  return (
+    n === "inversión" ||
+    n === "inversion" ||
+    n === "reinversion" ||
+    n === "reinvención" ||
+    n === "maquinaria"
+  );
+};
+
+const isCashoutName = (name) => lower(name) === "retiro";
+
+/** Agrupa gastos por categoría y subcategoría */
+function groupSpentsByCategory(spents) {
+  const catMap = new Map();
+
+  for (const r of spents) {
+    const catId = r.category?._id || r.category?.name || "default";
+    const catName = r.category?.name || "Sin categoría";
+    let cat = catMap.get(catId);
+    if (!cat) {
+      cat = {
+        category: { _id: r.category?._id, name: catName },
+        total_amount: 0,
+        total_count: 0,
+        _subs: new Map(),
+      };
+      catMap.set(catId, cat);
+    }
+
+    cat.total_amount += r.total_amount || 0;
+    cat.total_count += r.total_count || 0;
+
+    const subId = r.sub_category?._id || r.sub_category?.name || "default";
+    const subName = r.sub_category?.name || "Sin subcategoría";
+    let sub = cat._subs.get(subId);
+    if (!sub) {
+      sub = {
+        sub_category: { _id: r.sub_category?._id, name: subName },
+        total_amount: 0,
+        total_count: 0,
+      };
+      cat._subs.set(subId, sub);
+    }
+    sub.total_amount += r.total_amount || 0;
+    sub.total_count += r.total_count || 0;
+  }
+
+  const grouped = Array.from(catMap.values()).map((cat) => ({
+    category: cat.category,
+    total_amount: cat.total_amount,
+    total_count: cat.total_count,
+    subcategories: Array.from(cat._subs.values()).sort(
+      (a: any, b: any) => a.total_amount - b.total_amount // más gasto (más negativo) primero
+    ),
+  }));
+
+  // Ordenar categorías por monto (más negativo primero)
+  grouped.sort((a, b) => a.total_amount - b.total_amount);
+  return grouped;
+}
+
 const CashflowsSummary = ({
   cashflowsSummary,
   title = "Flujo de dinero del día",
@@ -22,43 +87,66 @@ const CashflowsSummary = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const incomes = cashflowsSummary.filter((c) => c.category.name === "Cobro");
-  const total_income = incomes.reduce(
-    (acc, curr) => acc + curr.total_amount,
-    0
-  );
-  const spents = cashflowsSummary.filter((c) => c.category.name === "Gasto");
-  const total_spent = spents.reduce((acc, curr) => acc + curr.total_amount, 0);
-  const investments = cashflowsSummary.filter(
-    (c) => c.category.name === "Inversión"
+
+  // Clasificación por signo y por nombre de categoría (para no mezclar inversiones/retiros dentro de “Gastos”)
+  const incomes = (cashflowsSummary || []).filter(
+    (c) => (c.total_amount || 0) > 0
   );
 
-  const total_invested = investments.reduce(
-    (acc, curr) => acc + curr.total_amount,
+  const onlyNegatives = (cashflowsSummary || []).filter(
+    (c) => (c.total_amount || 0) < 0
+  );
+
+  const investments = onlyNegatives.filter((c) =>
+    isInvestmentName(c.category?.name)
+  );
+  const cashouts = onlyNegatives.filter((c) => isCashoutName(c.category?.name));
+
+  // Gastos operativos = negativos excluyendo inversiones y retiros
+  const spents = onlyNegatives.filter(
+    (c) =>
+      !isInvestmentName(c.category?.name) && !isCashoutName(c.category?.name)
+  );
+
+  const total_income = incomes.reduce(
+    (acc, curr) => acc + (curr.total_amount || 0),
     0
   );
+  const total_spent = spents.reduce(
+    (acc, curr) => acc + (curr.total_amount || 0),
+    0
+  );
+  const total_invested = investments.reduce(
+    (acc, curr) => acc + (curr.total_amount || 0),
+    0
+  );
+  const total_cashouts = cashouts.reduce(
+    (acc, curr) => acc + (curr.total_amount || 0),
+    0
+  );
+
+  const operativeBalance = total_income + total_spent; // spents es negativo
+  const globalBalance = operativeBalance + total_invested; // investments es negativo
 
   const selectedSubCategory = searchParams.get("subCategory");
-
-  const cashouts = cashflowsSummary.filter((c) => c.category.name === "Retiro");
-  const total_cashouts = cashouts.reduce(
-    (acc, curr) => acc + curr.total_amount,
-    0
-  );
-
-  const operativeBalance = total_income + total_spent;
-  const globalBalance = operativeBalance + total_invested;
-
   const handleSubCategoryClick = (subCategory) => {
     const isSelected = selectedSubCategory === subCategory;
     if (!isSelected) {
       router.push(
-        `/cashflows?${createQueryString("", ["subCategory", "period", "view"], [subCategory, period || "this_month", "concept"], "/cashflows")}`
+        `/cashflows?${createQueryString(
+          "",
+          ["subCategory", "period", "view"],
+          [subCategory, period || "this_month", "concept"],
+          "/cashflows"
+        )}`
       );
     }
   };
 
   const filterClasses = filter ? "group-hover:underline" : "";
+
+  // Agrupar gastos por categoría y subcategoría
+  const spentsGrouped = groupSpentsByCategory(spents);
 
   return (
     <Card className="outline-none w-full min-w-[20rem] sm:max-w-[26rem] rounded-none sm:rounded-2xl">
@@ -67,7 +155,9 @@ const CashflowsSummary = ({
           <CardTitle className="text-xl">{title}</CardTitle>
         </div>
       </CardHeader>
+
       <CardContent>
+        {/* === INGRESOS === */}
         <div className=" flex justify-between items-center text-sm">
           <div className="flex items-center gap-1">
             <span className="font-semibold">Cobros</span>
@@ -76,18 +166,25 @@ const CashflowsSummary = ({
             {toMoney(total_income)}
           </span>
         </div>
+
         <div className="flex flex-col gap-0.5 mt-1">
           {incomes
-            .sort((a, b) => b.total_amount - a.total_amount)
+            .sort((a, b) => (b.total_amount || 0) - (a.total_amount || 0))
             .map((c) => (
-              <div key={c.sub_category.name}>
+              <div key={`${c.category?.name}-${c.sub_category?.name}-inc`}>
                 <div className=" flex justify-between items-center text-xs font-light">
                   <div className="flex items-center gap-1.5">
-                    <span>{c.sub_category.name}</span>{" "}
+                    <span>{c.sub_category?.name || "Sin subcategoría"}</span>{" "}
                     <span className="font-extralight text-muted-foreground text-[10px]">
                       (
                       <span className="text-blue-600">
-                        {((c.total_amount / total_income) * 100).toFixed(2)}%
+                        {total_income
+                          ? (
+                              ((c.total_amount || 0) / total_income) *
+                              100
+                            ).toFixed(2)
+                          : "0.00"}
+                        %
                       </span>
                       )
                     </span>
@@ -95,7 +192,7 @@ const CashflowsSummary = ({
                   <div className="flex items-center gap-1">
                     <CashflowSummaryUSDTooltip
                       c={c}
-                      id={c.id}
+                      id={`${c.category?.name}-${c.sub_category?.name}-inc`}
                       entityName="movimiento"
                       exchange_rate={c.avg_rate || aquapp_rate}
                     />
@@ -105,6 +202,8 @@ const CashflowsSummary = ({
               </div>
             ))}
         </div>
+
+        {/* === GASTOS agrupados por categoría -> subcategorías === */}
         <div className=" flex justify-between items-center text-sm mt-3">
           <div className="flex items-center gap-1">
             <span className="font-semibold">Gastos</span>
@@ -113,51 +212,99 @@ const CashflowsSummary = ({
             {toMoney(total_spent)}
           </span>
         </div>
-        <div className="flex flex-col gap-0.5 mt-1">
-          {spents.map((c) => (
-            <div
-              key={c.sub_category.name}
-              className={`group ${filter ? "cursor-pointer" : ""}`}
-              onClick={() => handleSubCategoryClick(c.sub_category.name)}
-            >
-              <div className=" flex justify-between items-center text-xs font-light">
+
+        <div className="flex flex-col gap-1 mt-1">
+          {spentsGrouped.map((cat) => (
+            <div key={cat.category?._id || cat.category?.name || "cat"}>
+              {/* Cabecera de categoría */}
+              <div className=" flex justify-between items-center text-xs font-medium mt-1">
                 <div className="flex items-center gap-1.5">
-                  <span className={filterClasses}>{c.sub_category.name}</span>{" "}
-                  <span className="font-extralight text-muted-foreground text-[10px]">
-                    (<span>{c.total_count}</span>)
-                    <span className="text-blue-600 ml-1">
-                      {((c.total_amount / total_spent) * 100).toFixed(2)}%
+                  <span className="uppercase tracking-wide text-blue-600 ml-1">
+                    {cat.category?.name || "Sin categoría"}
+                  </span>
+                  {cat.total_count ? (
+                    <span className="font-extralight text-muted-foreground text-[10px]">
+                      (<span>{cat.total_count}</span>)
                     </span>
-                  </span>
+                  ) : null}
                 </div>
-                <div className="flex items-center gap-1">
-                  <CashflowSummaryUSDTooltip
-                    c={c}
-                    id={c.sub_category.name}
-                    entityName="movimiento"
-                    exchange_rate={c.avg_rate || aquapp_rate}
-                  />
-                  <span className={filterClasses}>
-                    {toMoney(c.total_amount, true)}
-                  </span>
-                </div>
+                <span className="text-chart-3">
+                  {toMoney(cat.total_amount, true)}
+                </span>
+              </div>
+
+              {/* Subcategorías dentro de la categoría */}
+              <div className="flex flex-col gap-0.5 mt-0.5">
+                {cat.subcategories.map((s: any) => (
+                  <div
+                    key={
+                      (s.sub_category?._id || s.sub_category?.name || "sub") +
+                      "-" +
+                      (cat.category?._id || cat.category?.name)
+                    }
+                    className={`group ${filter ? "cursor-pointer" : ""} ml-2`}
+                    onClick={() => handleSubCategoryClick(s.sub_category?.name)}
+                  >
+                    <div className=" flex justify-between items-center text-xs font-light">
+                      <div className="flex items-center gap-1.5">
+                        <span className={filterClasses}>
+                          {s.sub_category?.name || "Sin subcategoría"}
+                        </span>{" "}
+                        <span className="font-extralight text-muted-foreground text-[10px]">
+                          (<span>{s.total_count || 0}</span>)
+                          <span className="text-blue-600 ml-1">
+                            {total_spent
+                              ? (
+                                  ((s.total_amount || 0) / total_spent) *
+                                  100
+                                ).toFixed(2)
+                              : "0.00"}
+                            %
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CashflowSummaryUSDTooltip
+                          c={{ ...s, id: s.sub_category?.name }}
+                          id={s.sub_category?.name}
+                          entityName="movimiento"
+                          exchange_rate={aquapp_rate}
+                        />
+                        <span className={filterClasses}>
+                          {toMoney(s.total_amount, true)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
+
         <div className="mt-2">
           <Separator />
         </div>
+
+        {/* === Resultado financiero === */}
         <div className=" flex justify-between items-center text-sm mt-2">
           <div className="flex items-center gap-1">
             <span className="font-semibold">Resultado financiero</span>
           </div>
           <span
-            className={`font-normal ${operativeBalance > 0 ? "text-chart-2" : operativeBalance < 0 ? "text-chart-3" : "text-chart-1"}`}
+            className={`font-normal ${
+              operativeBalance > 0
+                ? "text-chart-2"
+                : operativeBalance < 0
+                  ? "text-chart-3"
+                  : "text-chart-1"
+            }`}
           >
             {toMoney(operativeBalance)}
           </span>
         </div>
+
+        {/* === Inversiones === */}
         <div className=" flex justify-between items-center text-sm mt-8">
           <div className="flex items-center gap-1">
             <span className="font-semibold">Inversiones</span>
@@ -169,24 +316,30 @@ const CashflowsSummary = ({
         <div className="flex flex-col gap-0.5 mt-1">
           {investments.map((c) => (
             <div
-              key={c.sub_category.name}
+              key={`${c.category?.name}-${c.sub_category?.name}-inv`}
               className={`group ${filter ? "cursor-pointer" : ""}`}
-              onClick={() => handleSubCategoryClick(c.sub_category.name)}
+              onClick={() => handleSubCategoryClick(c.sub_category?.name)}
             >
               <div className=" flex justify-between items-center text-xs font-light">
                 <div className="flex items-center gap-1.5">
-                  <span className={filterClasses}>{c.sub_category.name}</span>{" "}
+                  <span className={filterClasses}>{c.sub_category?.name}</span>{" "}
                   <span className="font-extralight text-muted-foreground text-[10px]">
-                    (<span>{c.total_count}</span>)
+                    (<span>{c.total_count || 0}</span>)
                     <span className="text-blue-600 ml-1">
-                      {((c.total_amount / total_invested) * 100).toFixed(2)}%
+                      {total_invested
+                        ? (
+                            ((c.total_amount || 0) / total_invested) *
+                            100
+                          ).toFixed(2)
+                        : "0.00"}
+                      %
                     </span>
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <CashflowSummaryUSDTooltip
                     c={c}
-                    id={c.id}
+                    id={`${c.category?.name}-${c.sub_category?.name}-inv`}
                     entityName="inversión"
                     exchange_rate={c.avg_rate || aquapp_rate}
                   />
@@ -200,16 +353,26 @@ const CashflowsSummary = ({
         <div className="mt-2">
           <Separator />
         </div>
+
+        {/* === Saldo financiero === */}
         <div className=" flex justify-between items-center text-sm mt-2">
           <div className="flex items-center gap-1">
             <span className="font-semibold">Saldo financiero</span>
           </div>
           <span
-            className={`font-normal ${globalBalance > 0 ? "text-chart-2" : globalBalance < 0 ? "text-chart-3" : "text-chart-1"}`}
+            className={`font-normal ${
+              globalBalance > 0
+                ? "text-chart-2"
+                : globalBalance < 0
+                  ? "text-chart-3"
+                  : "text-chart-1"
+            }`}
           >
             {toMoney(globalBalance)}
           </span>
         </div>
+
+        {/* === Retiros === */}
         <div className=" flex justify-between items-center text-sm mt-8">
           <div className="flex items-center gap-1">
             <span className="font-semibold">Retiros</span>
@@ -218,22 +381,32 @@ const CashflowsSummary = ({
             {toMoney(total_cashouts)}
           </span>
         </div>
+
         <div className="mt-2">
           <Separator />
         </div>
+
+        {/* === Flujo neto de dinero === */}
         <div className=" flex justify-between items-center text-sm mt-2">
           <div className="flex items-center gap-1">
             <span className="font-semibold">Flujo neto de dinero</span>
           </div>
           <span
-            className={`font-normal ${globalBalance + total_cashouts > 0 ? "text-chart-2" : globalBalance + total_cashouts < 0 ? "text-chart-3" : "text-chart-1"}`}
+            className={`font-normal ${
+              globalBalance + total_cashouts > 0
+                ? "text-chart-2"
+                : globalBalance + total_cashouts < 0
+                  ? "text-chart-3"
+                  : "text-chart-1"
+            }`}
           >
             {toMoney(globalBalance + total_cashouts)}
           </span>
         </div>
       </CardContent>
+
       {aclaration && (
-        <CardFooter className="">
+        <CardFooter>
           <span className="text-muted-foreground font-extralight text-xs ">
             <u>Aclaración</u>: {aclaration}
           </span>

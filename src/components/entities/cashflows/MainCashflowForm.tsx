@@ -40,21 +40,6 @@ const MainCashflowForm = ({ user, canUpdate, state, canCreate }) => {
 
         <div className="flex items-center gap-2 w-full">
           <MyInput
-            id="cashflow-exchange-rate"
-            placeholder="Tipo de cambio"
-            shouldHideField="wallet"
-            monitoredField="cancelling"
-            shouldHide={(wallet, cancelling) => {
-              return !wallet?.name || wallet?.currency === cancelling;
-            }}
-            entity="cashflow"
-            field="exchange_rate"
-            type="number"
-            className="w-20 sm:w-28"
-            inputClassName="w-20 sm:w-28"
-            disabled={!canUpdate && !canCreate}
-          />
-          <MyInput
             id="cashflow-amount"
             monitoredField="wallet"
             placeholder={(wallet) =>

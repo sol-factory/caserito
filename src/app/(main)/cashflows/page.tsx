@@ -4,7 +4,12 @@ import connectDB from "@/lib/connectDB";
 import { cleanRegExp } from "@/helpers/text";
 import { verifySession } from "@/helpers/auth";
 import { getBooleanRoles } from "@/helpers/permissions";
-import { getCashflowsReports, getWorkplace, toObjectId } from "@/helpers/mdb";
+import {
+  getCashflowsReports,
+  getWorkplace,
+  groupReportsByCategory,
+  toObjectId,
+} from "@/helpers/mdb";
 import { MyFormDialog } from "@/components/custom-ui/MyFormDialog";
 import { getPeriodFilter, getUserDate } from "@/helpers/date";
 import { CashflowModel } from "@/schemas/cashflow";
@@ -141,7 +146,7 @@ export default async function Cashflows({ searchParams }) {
   }
   let cashflows = [];
   let gatheredByWallet = [];
-
+  console.log({ walletMatchStage });
   const [cashResponse, walletResponse] = await Promise.all([
     await CashflowModel.aggregate(pipeline),
     walletMatchStage &&
@@ -157,22 +162,18 @@ export default async function Cashflows({ searchParams }) {
             _id: "$wallet._id",
             wallet: { $last: "$wallet" },
             gathered: {
-              $sum: { $cond: [{ $eq: ["$kind", "Ingreso"] }, "$amount", 0] },
+              $sum: { $cond: [{ $gt: ["$amount", 0] }, "$amount", 0] },
             },
             spent: {
               $sum: {
-                $cond: [{ $eq: ["$kind", "Egreso"] }, { $abs: "$amount" }, 0],
+                $sum: { $cond: [{ $lt: ["$amount", 0] }, "$amount", 0] },
               },
             },
             gatherings: {
-              $sum: {
-                $cond: [{ $eq: ["$kind", "Ingreso"] }, 1, 0],
-              },
+              $sum: { $cond: [{ $gt: ["$amount", 0] }, 1, 0] },
             },
             spents: {
-              $sum: {
-                $cond: [{ $eq: ["$kind", "Egreso"] }, 1, 0],
-              },
+              $sum: { $cond: [{ $lt: ["$amount", 0] }, 1, 0] },
             },
           },
         },
@@ -204,7 +205,7 @@ export default async function Cashflows({ searchParams }) {
           balance: w.gathered - w.spent,
         };
       } else {
-        return { ...w, balance: w.gathered - w.spent };
+        return { ...w, balance: w.gathered + w.spent };
       }
     })
     .sort((a, b) => a.balance - b.balance);
@@ -221,6 +222,10 @@ export default async function Cashflows({ searchParams }) {
   const aquapp_rate = 1;
 
   const reports = await getCashflowsReports(cashflows, 1);
+
+  console.log({
+    gatheredByWallet,
+  });
 
   return (
     <div className="pb-40">
@@ -334,24 +339,21 @@ export default async function Cashflows({ searchParams }) {
       </Card>
 
       <div className="flex flex-col md:flex-row sm:items-start gap-3 mt-3">
-        {isOwner && !search && !client_id && (
-          <CashflowsSummary
-            cashflowsSummary={reports.cashflowsBySubCategory}
-            period={period}
-            filter
-            aquapp_rate={aquapp_rate}
-          />
-        )}
-        {(isOwner || isManager) && !search && !client_id && (
-          <WalletsSummary
-            gatheredByWallet={gatheredByWallet}
-            closures={[]}
-            date={dateToFilter}
-            dayFilters={dayFilters}
-            lastCashflows={[]}
-            storeWalletsBalances={storeWalletsBalances}
-          />
-        )}
+        <CashflowsSummary
+          cashflowsSummary={reports.cashflowsBySubCategory}
+          period={period}
+          filter
+          aquapp_rate={aquapp_rate}
+        />
+
+        <WalletsSummary
+          gatheredByWallet={gatheredByWallet}
+          closures={[]}
+          date={dateToFilter}
+          dayFilters={dayFilters}
+          lastCashflows={[]}
+          storeWalletsBalances={storeWalletsBalances}
+        />
       </div>
     </div>
   );
