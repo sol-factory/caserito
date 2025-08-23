@@ -128,7 +128,7 @@ export const getLoginCode = async ({ email }: { email: string }) => {
   };
 };
 
-export const login = async ({ email, code, geo }) => {
+export const login = async ({ email, code }) => {
   try {
     const lowerEmail = email?.toLowerCase();
     await connectDB();
@@ -142,11 +142,6 @@ export const login = async ({ email, code, geo }) => {
     if (!user) {
       return { ok: false, message: "Código o correo incorrectos" };
     }
-
-    const h = await headers();
-    const ip = h.get("x-forwarded-for");
-
-    await UserModel.findByIdAndUpdate(user._id, { $addToSet: { ips: ip } });
 
     const membership = await MemberModel.findOne({
       "user.email": user.email,
