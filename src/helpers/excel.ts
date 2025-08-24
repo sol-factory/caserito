@@ -45,6 +45,10 @@ const WALLETS = {
     _id: "68a9e707bb3308b111e20dd0",
     name: "caserito35.mp",
   },
+  GENERAL: {
+    _id: "68ab40f430752df28fb9d1f7",
+    name: "GENERAL",
+  },
   CHEQUE: {
     _id: "68a9e6fcbb3308b111e20dc2",
     name: "caserito35",
@@ -128,14 +132,12 @@ function medioPagoToWallet(v) {
 async function ensureCategoryAndSub(catName, subName) {
   const name = normalize(catName).toUpperCase();
   const sub = normalize(subName).toUpperCase();
-  console.log({ name });
 
   const category = await CashflowCategoryModel.findOne({ name });
 
   const subcat = await CashflowSubCategoryModel.findOne({
     name: sub,
     "category._id": category?._id,
-    deleted: false,
   });
 
   return {
@@ -171,13 +173,19 @@ export async function importExcelCashflows(fileName) {
 
   let createdSales = 0;
   let createdCashflows = 0;
-
+  let i = 0;
   for (const row of rows) {
-    console.log({ createdCashflows });
+    i++;
     try {
       const kind = mapKind(row[COLS.ingEgr]);
       const catName = row[COLS.categoria];
       const subName = row[COLS.subCategoria];
+      if (catName !== "VENTAS") continue;
+      console.log({ catName, subName, i });
+      const { category, sub_category } = await ensureCategoryAndSub(
+        catName,
+        subName
+      );
 
       // Fechas
       const saleDate = excelCellToDate(row[COLS.fecha]) || new Date();
@@ -186,18 +194,14 @@ export async function importExcelCashflows(fileName) {
       // Montos
       const montoBoleta = toNumber(row[COLS.montoBoleta]);
       const pagoDiario = toNumber(row[COLS.pagoDiarios]);
-      const saleAmount = Math.abs(montoBoleta || pagoDiario);
+      const saleAmount =
+        montoBoleta > 0 ? Math.abs(montoBoleta) : Math.abs(pagoDiario || 0);
       // Para el cashflow uso lo pagado ese día; si no hay, uso el total
-      const cashflowAmount = Math.abs(pagoDiario);
+      const cashflowAmount = Math.abs(pagoDiario || 0);
 
       // Wallet
       const wallet = medioPagoToWallet(row[COLS.medioPago]);
       const fullWallet = await WalletModel.findById(wallet?._id);
-
-      const { category, sub_category } = await ensureCategoryAndSub(
-        catName,
-        subName
-      );
 
       // --- Crear Sale ---
       const sale = await SaleModel.create({
@@ -224,7 +228,6 @@ export async function importExcelCashflows(fileName) {
 
       if (cfDate || pagoDiario) {
         await CashflowModel.create({
-          detail: `${category.name} / ${sub_category.name} / ${wallet.name} / ${normalize(row[COLS.carga])}`,
           date: cfDate,
           full_date: getFullDate(cfDate),
           category,
@@ -235,9 +238,9 @@ export async function importExcelCashflows(fileName) {
           sale_date: sale.date,
           sale_full_date: sale.full_date,
           amount: cashflowAmount * coef, // signo según kind
-          currency: wallet.currency,
+          currency: wallet?.currency,
           exchange_rate: 1,
-          cancelling: wallet.currency,
+          cancelling: wallet?.currency,
           wallet: {
             ...fullWallet,
             logo_url: fullWallet?.institution?.logo_url || "",
