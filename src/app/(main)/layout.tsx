@@ -27,6 +27,7 @@ import DeleteDialog from "@/components/custom-ui/DeleteDialog";
 import { DatePickerPeriod } from "@/components/custom-ui/DatePickerPeriod";
 import AttachmentsTable from "@/components/entities/attachments/AttachmentsTable";
 import CommentsTable from "@/components/entities/comments/CommentsTable";
+import { importExcelCashflows } from "@/helpers/excel";
 
 export const metadata: Metadata = {
   title: "Caserito",
@@ -166,6 +167,8 @@ export default async function AppLayout({ children }) {
   if (["authorized", "ACTIVE"].includes(storeSub?.status)) {
     activeStoreSub = storeSub;
   }
+
+  // await importExcelCashflows("cashflows.xlsx");
 
   return (
     <QueryProvider>

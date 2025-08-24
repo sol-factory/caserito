@@ -11,6 +11,7 @@ import { createQueryString } from "@/helpers/url";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Separator } from "react-aria-components";
 import CashflowSummaryUSDTooltip from "./CashflowSummaryUSDTooltip";
+import { useState } from "react";
 
 const lower = (s) => String(s || "").toLowerCase();
 
@@ -87,6 +88,7 @@ const CashflowsSummary = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [showCategories, setShowCategories] = useState([]);
 
   // Clasificación por signo y por nombre de categoría (para no mezclar inversiones/retiros dentro de “Gastos”)
   const incomes = (cashflowsSummary || []).filter(
@@ -217,7 +219,18 @@ const CashflowsSummary = ({
           {spentsGrouped.map((cat) => (
             <div key={cat.category?._id || cat.category?.name || "cat"}>
               {/* Cabecera de categoría */}
-              <div className=" flex justify-between items-center text-xs font-medium mt-1">
+              <div
+                className=" flex justify-between items-center text-xs font-medium mt-1"
+                onClick={() => {
+                  if (showCategories.includes(cat.category.name)) {
+                    setShowCategories(
+                      showCategories.filter((c) => c !== cat.category.name)
+                    );
+                  } else {
+                    setShowCategories([...showCategories, cat.category.name]);
+                  }
+                }}
+              >
                 <div className="flex items-center gap-1.5">
                   <span className="uppercase tracking-wide text-blue-600 ml-1">
                     {cat.category?.name || "Sin categoría"}
@@ -227,6 +240,14 @@ const CashflowsSummary = ({
                       (<span>{cat.total_count}</span>)
                     </span>
                   ) : null}
+                  <span className="text-blue-600 ml-1">
+                    {total_spent
+                      ? (((cat.total_amount || 0) / total_spent) * 100).toFixed(
+                          2
+                        )
+                      : "0.00"}
+                    %
+                  </span>
                 </div>
                 <span className="text-chart-3">
                   {toMoney(cat.total_amount, true)}
@@ -234,50 +255,54 @@ const CashflowsSummary = ({
               </div>
 
               {/* Subcategorías dentro de la categoría */}
-              <div className="flex flex-col gap-0.5 mt-0.5">
-                {cat.subcategories.map((s: any) => (
-                  <div
-                    key={
-                      (s.sub_category?._id || s.sub_category?.name || "sub") +
-                      "-" +
-                      (cat.category?._id || cat.category?.name)
-                    }
-                    className={`group ${filter ? "cursor-pointer" : ""} ml-2`}
-                    onClick={() => handleSubCategoryClick(s.sub_category?.name)}
-                  >
-                    <div className=" flex justify-between items-center text-xs font-light">
-                      <div className="flex items-center gap-1.5">
-                        <span className={filterClasses}>
-                          {s.sub_category?.name || "Sin subcategoría"}
-                        </span>{" "}
-                        <span className="font-extralight text-muted-foreground text-[10px]">
-                          (<span>{s.total_count || 0}</span>)
-                          <span className="text-blue-600 ml-1">
-                            {total_spent
-                              ? (
-                                  ((s.total_amount || 0) / total_spent) *
-                                  100
-                                ).toFixed(2)
-                              : "0.00"}
-                            %
+              {showCategories.includes(cat.category.name) && (
+                <div className="flex flex-col gap-0.5 mt-0.5">
+                  {cat.subcategories.map((s: any) => (
+                    <div
+                      key={
+                        (s.sub_category?._id || s.sub_category?.name || "sub") +
+                        "-" +
+                        (cat.category?._id || cat.category?.name)
+                      }
+                      className={`group ${filter ? "cursor-pointer" : ""} ml-2`}
+                      onClick={() =>
+                        handleSubCategoryClick(s.sub_category?.name)
+                      }
+                    >
+                      <div className=" flex justify-between items-center text-xs font-light">
+                        <div className="flex items-center gap-1.5">
+                          <span className={filterClasses}>
+                            {s.sub_category?.name || "Sin subcategoría"}
+                          </span>{" "}
+                          <span className="font-extralight text-muted-foreground text-[10px]">
+                            (<span>{s.total_count || 0}</span>)
+                            <span className="text-blue-600 ml-1">
+                              {total_spent
+                                ? (
+                                    ((s.total_amount || 0) / total_spent) *
+                                    100
+                                  ).toFixed(2)
+                                : "0.00"}
+                              %
+                            </span>
                           </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CashflowSummaryUSDTooltip
-                          c={{ ...s, id: s.sub_category?.name }}
-                          id={s.sub_category?.name}
-                          entityName="movimiento"
-                          exchange_rate={aquapp_rate}
-                        />
-                        <span className={filterClasses}>
-                          {toMoney(s.total_amount, true)}
-                        </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CashflowSummaryUSDTooltip
+                            c={{ ...s, id: s.sub_category?.name }}
+                            id={s.sub_category?.name}
+                            entityName="movimiento"
+                            exchange_rate={aquapp_rate}
+                          />
+                          <span className={filterClasses}>
+                            {toMoney(s.total_amount, true)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
