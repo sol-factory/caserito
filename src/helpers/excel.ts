@@ -8,9 +8,6 @@ import {
 import { SaleModel } from "@/schemas/sale";
 import { getFullDate } from "./date";
 
-/* eslint-disable no-console */
-require("dotenv").config();
-
 import path from "path";
 import fs from "fs/promises";
 import * as XLSX from "xlsx";
@@ -88,8 +85,8 @@ function excelCellToDate(v) {
     .split(/[\/\-]/);
   if (parts.length >= 3) {
     // muchas planillas vienen D/M/YYYY
-    let d = parseInt(parts[0], 10);
-    let m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
     let y = parseInt(parts[2], 10);
     if (y < 100) y += 2000;
     return new Date(Date.UTC(y, m, d, 10, 0, 0)); // 10:00 UTC para evitar TZ
@@ -133,9 +130,9 @@ async function ensureCategoryAndSub(catName, subName) {
   const sub = normalize(subName).toUpperCase();
   console.log({ name });
 
-  let category = await CashflowCategoryModel.findOne({ name });
+  const category = await CashflowCategoryModel.findOne({ name });
 
-  let subcat = await CashflowSubCategoryModel.findOne({
+  const subcat = await CashflowSubCategoryModel.findOne({
     name: sub,
     "category._id": category?._id,
     deleted: false,
@@ -173,7 +170,6 @@ export async function importExcelCashflows(fileName) {
   console.log(`📄 Filas leídas: ${rows.length}`);
 
   let createdSales = 0;
-  let skipped = 0;
   let createdCashflows = 0;
 
   for (const row of rows) {
@@ -261,7 +257,7 @@ export async function importExcelCashflows(fileName) {
   }
 
   console.log("✅ Listo");
-  console.log({ createdSales, createdCashflows, skipped });
+  console.log({ createdSales, createdCashflows });
 
   await mongoose.disconnect();
 }
