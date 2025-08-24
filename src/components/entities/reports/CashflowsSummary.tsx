@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Separator } from "react-aria-components";
 import CashflowSummaryUSDTooltip from "./CashflowSummaryUSDTooltip";
 import { useState } from "react";
+import { Eye, EyeClosed } from "lucide-react";
 
 const lower = (s) => String(s || "").toLowerCase();
 
@@ -208,7 +209,7 @@ const CashflowsSummary = ({
         {/* === GASTOS agrupados por categoría -> subcategorías === */}
         <div className=" flex justify-between items-center text-sm mt-3">
           <div className="flex items-center gap-1">
-            <span className="font-semibold">Gastos</span>
+            <span className="font-bold">Gastos</span>
           </div>
           <span className="font-normal text-chart-3">
             {toMoney(total_spent)}
@@ -219,20 +220,30 @@ const CashflowsSummary = ({
           {spentsGrouped.map((cat) => (
             <div key={cat.category?._id || cat.category?.name || "cat"}>
               {/* Cabecera de categoría */}
-              <div
-                className=" flex justify-between items-center text-xs font-medium mt-1"
-                onClick={() => {
-                  if (showCategories.includes(cat.category.name)) {
-                    setShowCategories(
-                      showCategories.filter((c) => c !== cat.category.name)
-                    );
-                  } else {
-                    setShowCategories([...showCategories, cat.category.name]);
-                  }
-                }}
-              >
+              <div className=" flex justify-between items-center text-xs font-medium mt-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="uppercase tracking-wide text-blue-600 ml-1">
+                  {showCategories.includes(cat.category.name) ? (
+                    <Eye
+                      className="w-3 h-3 hover:text-blue-600 cursor-pointer"
+                      strokeWidth={1}
+                      onClick={() =>
+                        setShowCategories([
+                          showCategories.filter((c) => c !== cat.category.name),
+                        ])
+                      }
+                    />
+                  ) : (
+                    <EyeClosed
+                      className="w-3 h-3 hover:text-blue-600 cursor-pointer"
+                      strokeWidth={1}
+                      onClick={() =>
+                        setShowCategories(
+                          showCategories.concat([cat.category.name])
+                        )
+                      }
+                    />
+                  )}
+                  <span className="uppercase tracking-wide font-bold select-none">
                     {cat.category?.name || "Sin categoría"}
                   </span>
                   {cat.total_count ? (
@@ -240,7 +251,7 @@ const CashflowsSummary = ({
                       (<span>{cat.total_count}</span>)
                     </span>
                   ) : null}
-                  <span className="text-blue-600 ml-1">
+                  <span className="font-light ml-1 text-[10px]">
                     {total_spent
                       ? (((cat.total_amount || 0) / total_spent) * 100).toFixed(
                           2
@@ -264,7 +275,7 @@ const CashflowsSummary = ({
                         "-" +
                         (cat.category?._id || cat.category?.name)
                       }
-                      className={`group ${filter ? "cursor-pointer" : ""} ml-2`}
+                      className={`group ${filter ? "cursor-pointer" : ""} ml-6`}
                       onClick={() =>
                         handleSubCategoryClick(s.sub_category?.name)
                       }
