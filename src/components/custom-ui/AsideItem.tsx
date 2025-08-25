@@ -16,8 +16,6 @@ interface Props {
 }
 
 const AsideItem = ({ text, href, icon }: Props) => {
-  const { can_view_quote, can_view_service, can_view_cashflow } =
-    usePermissions();
   const globalSearchText = useStore((s) => s.globalSearchText);
 
   const update = useStore((s) => s.update);
@@ -27,13 +25,6 @@ const AsideItem = ({ text, href, icon }: Props) => {
 
   const currentPath = path.split("?")[0];
   const isSelected = currentPath === `/${href}`;
-
-  const hide =
-    (text === "Cotizaciones" && !can_view_quote) ||
-    (text === "Servicios" && !can_view_service) ||
-    (text === "Caja" && !can_view_cashflow);
-
-  if (hide) return <></>;
 
   return (
     <div className="flex flex-col w-full">

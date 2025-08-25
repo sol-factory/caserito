@@ -146,7 +146,7 @@ export default async function Cashflows({ searchParams }) {
   }
   let cashflows = [];
   let gatheredByWallet = [];
-  console.log({ walletMatchStage });
+
   const [cashResponse, walletResponse] = await Promise.all([
     await CashflowModel.aggregate(pipeline),
     walletMatchStage &&

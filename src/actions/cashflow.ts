@@ -331,14 +331,13 @@ export const remove = async (_id: string, user) => {
 
     // 3) Revertir impacto en la Venta (si aplica y si no estaba ya borrado)
     if (!wasAlreadyDeleted && cf.sale_id) {
-      const saleGatheredAmountField =
-        cf.cancelling === "usd" ? "usd_gathered_amount" : "gathered_amount";
+      const saleGatheredAmountField = "gathered_amount";
 
       await SaleModel.findByIdAndUpdate(
         cf.sale_id,
         {
           $inc: {
-            [saleGatheredAmountField]: -1 * cf.cancelling_amount,
+            [saleGatheredAmountField]: cf.amount,
             gatherings: -1,
           },
         },

@@ -180,12 +180,12 @@ export async function importExcelCashflows(fileName) {
       const kind = mapKind(row[COLS.ingEgr]);
       const catName = row[COLS.categoria];
       const subName = row[COLS.subCategoria];
-      if (catName !== "VENTAS") continue;
       console.log({ catName, subName, i });
       const { category, sub_category } = await ensureCategoryAndSub(
         catName,
         subName
       );
+      console.log({ category, sub_category });
 
       // Fechas
       const saleDate = excelCellToDate(row[COLS.fecha]) || new Date();

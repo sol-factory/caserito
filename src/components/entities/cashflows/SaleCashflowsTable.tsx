@@ -52,7 +52,7 @@ const SaleCashflowsTable = () => {
   const gathered =
     activeCashflows?.reduce((prev, curr) => prev + curr.amount, 0) || 0;
 
-  const pendingAmount = Math.round(saleNetAmount - gathered);
+  const pendingAmount = Math.round(saleNetAmount + gathered);
 
   useEffect(() => {
     const shouldExchange = cancelling !== wallet?.currency;
