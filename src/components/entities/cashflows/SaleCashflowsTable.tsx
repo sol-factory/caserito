@@ -41,8 +41,7 @@ const SaleCashflowsTable = () => {
     enabled: !!sale?._id,
   });
 
-  const activeCashflows =
-    cashflows?.filter((c) => !c.deleted && cancelling === c.cancelling) || [];
+  const activeCashflows = cashflows?.filter((c) => !c.deleted) || [];
 
   const amountField = "amount";
 
@@ -53,6 +52,8 @@ const SaleCashflowsTable = () => {
     activeCashflows?.reduce((prev, curr) => prev + curr.amount, 0) || 0;
 
   const pendingAmount = Math.round(saleNetAmount + gathered);
+
+  console.log({ sale });
 
   useEffect(() => {
     const shouldExchange = cancelling !== wallet?.currency;
