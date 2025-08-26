@@ -29,6 +29,7 @@ export const upsert = async ({ data }, user) => {
       sub_category: data.sub_category,
       creator: user,
       ...saleMetadata,
+      search_field: `${data.category.name} ${data.sub_category.name}`,
     };
 
     let old_amount = 0;
