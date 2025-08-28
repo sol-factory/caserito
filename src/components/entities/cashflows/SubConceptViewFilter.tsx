@@ -1,11 +1,17 @@
 import CleanUrlFilters from "@/components/custom-ui/CleanUrlFilters";
 import { DatePickerPeriod } from "@/components/custom-ui/DatePickerPeriod";
 
-const SubConceptViewFilter = ({ subCategory }) => {
+const SubConceptViewFilter = ({ subCategory, category }) => {
   return (
     <div className="flex flex-col">
       <div className="flex items-center text-md font-light">
-        <span className="font-bold underline text-nowrap">Concepto</span>:
+        <span className="font-bold underline text-nowrap">Categoría</span>:
+        <div className="ml-2 mr-2 text-sm font-extralight text-orange-600 inline">
+          {category}
+        </div>{" "}
+      </div>
+      <div className="flex items-center text-md font-light">
+        <span className="font-bold underline text-nowrap">Subcategoría</span>:
         <div className="ml-2 mr-2 text-sm font-extralight text-orange-600 inline">
           {subCategory}
         </div>{" "}

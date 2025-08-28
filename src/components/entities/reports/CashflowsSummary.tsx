@@ -132,14 +132,16 @@ const CashflowsSummary = ({
   const globalBalance = operativeBalance + total_invested; // investments es negativo
 
   const selectedSubCategory = searchParams.get("subCategory");
-  const handleSubCategoryClick = (subCategory) => {
-    const isSelected = selectedSubCategory === subCategory;
+  const selectedCategory = searchParams.get("category");
+  const handleSubCategoryClick = (subCategory, category) => {
+    const isSelected =
+      selectedSubCategory === subCategory && category === selectedCategory;
     if (!isSelected) {
       router.push(
         `/cashflows?${createQueryString(
           "",
-          ["subCategory", "period", "view"],
-          [subCategory, period || "this_month", "concept"],
+          ["category", "subCategory", "period", "view"],
+          [category, subCategory, period || "this_month", "concept"],
           "/cashflows"
         )}`
       );
@@ -277,7 +279,10 @@ const CashflowsSummary = ({
                       }
                       className={`group ${filter ? "cursor-pointer" : ""} ml-6`}
                       onClick={() =>
-                        handleSubCategoryClick(s.sub_category?.name)
+                        handleSubCategoryClick(
+                          s.sub_category?.name,
+                          cat.category?.name
+                        )
                       }
                     >
                       <div className=" flex justify-between items-center text-xs font-light">
@@ -354,7 +359,9 @@ const CashflowsSummary = ({
             <div
               key={`${c.category?.name}-${c.sub_category?.name}-inv`}
               className={`group ${filter ? "cursor-pointer" : ""}`}
-              onClick={() => handleSubCategoryClick(c.sub_category?.name)}
+              onClick={() =>
+                handleSubCategoryClick(c.sub_category?.name, c.category?.name)
+              }
             >
               <div className=" flex justify-between items-center text-xs font-light">
                 <div className="flex items-center gap-1.5">

@@ -28,7 +28,7 @@ export default async function Cashflows({ searchParams }) {
   await connectDB();
 
   const user = await verifySession();
-  const { date, search, client_id, subCategory, view, period } =
+  const { date, search, client_id, subCategory, category, view, period } =
     await searchParams;
   const dateToFilter = date
     ? getUserDate(user, new Date(+date))
@@ -59,6 +59,7 @@ export default async function Cashflows({ searchParams }) {
   };
 
   if (subCategory) {
+    matchStage["category.name"] = category;
     matchStage["sub_category.name"] = subCategory;
     delete dayFilters["full_date.day"];
     delete dayFilters["full_date.month"];
@@ -305,7 +306,12 @@ export default async function Cashflows({ searchParams }) {
               )}
             </div>
           )}
-          {!!subCategory && <SubConceptViewFilter subCategory={subCategory} />}
+          {!!subCategory && (
+            <SubConceptViewFilter
+              subCategory={subCategory}
+              category={category}
+            />
+          )}
           {!!search && (
             <div className="flex flex-col sm:flex-row mr-3">
               <div className="flex">
