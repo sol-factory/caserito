@@ -77,7 +77,6 @@ export function DatePicker<E extends keyof SelectableStates>({
 
   const isOpen = openDatePicker === id;
   const paramDate = !!dateFromParams ? new Date(+dateFromParams) : null;
-
   const dateValue =
     param && paramDate ? paramDate : value ? new Date(value) : undefined;
 
@@ -162,7 +161,7 @@ export function DatePicker<E extends keyof SelectableStates>({
 
     update("openDatePicker", "");
   };
-
+  console.log({ dateValue });
   return (
     <div ref={popoverRef} className={`relative ${popoverWidth} inline-flex`}>
       <Popover open={openDatePicker === id} modal={false}>
@@ -216,11 +215,11 @@ export function DatePicker<E extends keyof SelectableStates>({
                 }
               }}
             >
-              {weekly
-                ? weekRangeText(weekStart, weekEnd)
-                : format(dateValue, dateFormat, {
+              {!!dateValue
+                ? format(dateValue, dateFormat, {
                     locale: es,
-                  })}
+                  })
+                : ""}
             </Button>
           )}
         </PopoverTrigger>

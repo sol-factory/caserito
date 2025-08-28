@@ -37,14 +37,24 @@ import { addUUIDtoFields } from "@/helpers/arrays";
 import DebtsViewFilter from "@/components/entities/sales/DebtsViewFilter";
 import ClientViewFilter from "@/components/entities/sales/ClientViewFilter";
 import WalletsGatherings from "@/components/entities/reports/WalletsGatherings";
+import SubConceptViewFilter from "@/components/entities/cashflows/SubConceptViewFilter";
 
 export default async function Sales({ searchParams }) {
   await connectDB();
 
   const user = await verifySession();
 
-  const { date, search, client_id, view, since, to, period } =
-    await searchParams;
+  const {
+    date,
+    search,
+    client_id,
+    view,
+    since,
+    to,
+    period,
+    category,
+    subCategory,
+  } = await searchParams;
   const dateToFilter = date
     ? getUserDate(user, new Date(+date))
     : getUserDate(user);
@@ -83,6 +93,7 @@ export default async function Sales({ searchParams }) {
 
     sortOrders = { date: 1 };
   }
+
   if (daily) {
     dateFilters = {
       "full_date.day": dateToFilter.getUTCDate(),
@@ -131,6 +142,14 @@ export default async function Sales({ searchParams }) {
       ...matchStage,
       ...periodFilter,
     };
+  }
+
+  if (subCategory || category) {
+    matchStage = { deleted: false };
+    if (category) {
+      matchStage["category.name"] = category;
+    }
+    if (subCategory) matchStage["sub_category.name"] = subCategory;
   }
 
   const projectStage = {
@@ -358,7 +377,7 @@ export default async function Sales({ searchParams }) {
               : "overflow-x-scroll overflow-y-clip flex-1 no-scrollbar"
           }
         >
-          {(!!date || weekly || daily) && (
+          {(!!date || weekly || daily) && !subCategory && (
             <div className="relative flex items-center w-full gap-0 sm:gap-2 mt-4">
               <span className="text-md font-light">
                 <span className="font-bold underline text-nowrap">
@@ -397,6 +416,13 @@ export default async function Sales({ searchParams }) {
                 </div>
               )}
             </div>
+          )}
+          {!!subCategory && (
+            <SubConceptViewFilter
+              subCategory={subCategory}
+              category={category}
+              hideDateFilter
+            />
           )}
           <ClientViewFilter
             client={client}

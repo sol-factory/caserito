@@ -9,6 +9,8 @@ import { Clock, LogIn, LogOut, MessageCircle, Paperclip } from "lucide-react";
 import Image from "next/image";
 import usePermissions from "@/hooks/use-permissions";
 import { SaleProgressBar } from "./SaleProgressBar";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createQueryString } from "@/helpers/url";
 
 const SaleRow = ({
   s,
@@ -20,6 +22,8 @@ const SaleRow = ({
   multiCurrency = false,
 }) => {
   const { isOwner, isManager } = usePermissions();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const sale_date = new Date(
     s.full_date?.year,
@@ -51,6 +55,25 @@ const SaleRow = ({
       canFinish(s),
     ]) + 1;
 
+  const selectedSubCategory = searchParams.get("subCategory");
+  const selectedCategory = searchParams.get("category");
+
+  const handleSubCategoryClick = (e, subCategory, category) => {
+    e.stopPropagation();
+    const isSelected =
+      selectedSubCategory === subCategory && category === selectedCategory;
+    if (!isSelected) {
+      router.push(
+        `/washes?${createQueryString(
+          "",
+          ["category", "subCategory", "view"],
+          [category, subCategory, "concept"],
+          "/washes"
+        )}`
+      );
+    }
+  };
+
   return (
     <DropdownRow
       item={s}
@@ -67,6 +90,9 @@ const SaleRow = ({
         <div className="w-48">
           <div className="flex flex-col">
             <span
+              onClick={(e) =>
+                handleSubCategoryClick(e, s.sub_category.name, s.category.name)
+              }
               className={`${s.category.name === "VENTA" ? "text-blue-600" : "text-red-600"} font-bold`}
             >
               {s.sub_category.name}
