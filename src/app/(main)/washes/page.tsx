@@ -38,6 +38,7 @@ import DebtsViewFilter from "@/components/entities/sales/DebtsViewFilter";
 import ClientViewFilter from "@/components/entities/sales/ClientViewFilter";
 import WalletsGatherings from "@/components/entities/reports/WalletsGatherings";
 import SubConceptViewFilter from "@/components/entities/cashflows/SubConceptViewFilter";
+import { importExcelCashflows } from "@/helpers/excel";
 
 export default async function Sales({ searchParams }) {
   await connectDB();
@@ -332,6 +333,8 @@ export default async function Sales({ searchParams }) {
   const showReports = (daily || weekly || !!client_id) && !search && isOwner;
 
   sales = addUUIDtoFields(sales, ["services", "discounts"]);
+
+  // await importExcelCashflows("cashflows.xlsx");
 
   return (
     <div>

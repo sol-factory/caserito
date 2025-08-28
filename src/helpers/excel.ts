@@ -60,12 +60,12 @@ const WALLETS = {
 const COLS = {
   fecha: "FECHA",
   ingEgr: "ING/EGR",
-  categoria: "CATEGORIA",
-  subCategoria: "SUB CATEGORIA",
-  carga: "CARGA",
+  categoria: "TIPO ",
+  subCategoria: "PROVEEDOR/GASTO",
+  carga: " CARGA",
   medioPago: "MEDIO DE PAGO",
-  montoBoleta: "MONTO BOLETA",
-  pagoDiarios: "PAGO DIARIOS",
+  montoBoleta: " MONTO BOLETA ",
+  pagoDiarios: " PAGO DIARIOS ",
   fechaPago: "FECHA PAGO",
 };
 
@@ -170,18 +170,24 @@ export async function importExcelCashflows(fileName) {
   let createdSales = 0;
   let createdCashflows = 0;
   let i = 0;
+  await CashflowModel.deleteMany({});
+  await SaleModel.deleteMany({});
   for (const row of rows) {
     i++;
     try {
       const kind = mapKind(row[COLS.ingEgr]);
       const catName = row[COLS.categoria];
       const subName = row[COLS.subCategoria];
-      console.log({ catName, subName, i });
+
       const { category, sub_category } = await ensureCategoryAndSub(
         catName,
         subName
       );
-      console.log({ category, sub_category });
+      console.log({
+        category: category.name,
+        sub_category: sub_category.name,
+        i,
+      });
 
       // Fechas
       const saleDate = excelCellToDate(row[COLS.fecha]) || new Date();
