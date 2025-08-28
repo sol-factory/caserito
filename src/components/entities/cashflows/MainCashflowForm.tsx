@@ -61,7 +61,14 @@ const MainCashflowForm = ({ user, canUpdate, state, canCreate }) => {
             disabled={!canUpdate && !canCreate}
           />
         </div>
-        <CancellingAmount />
+        <MyInput
+          id="cashflow-amount"
+          placeholder="Detalle"
+          className="w-full"
+          inputClassName="w-full"
+          entity="cashflow"
+          field="detail"
+        />
       </div>
     </>
   );
