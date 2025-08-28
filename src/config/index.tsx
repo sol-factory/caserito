@@ -71,6 +71,7 @@ export const ENTITIES = {
       sub_category: {},
       gathered_amount: 0,
       canUpdate: false,
+      wallet: {},
     }),
     menus: {
       rowItems: (s, isOwner) => <SaleRowMenuItems s={s} isOwner={isOwner} />,
@@ -118,11 +119,6 @@ export const ENTITIES = {
               action="getSubCategories"
               filterIdField="category"
               placeholder="Subcategoría"
-              idToFocusAfterSelection={(newValue) =>
-                ["Venta de productos", "Membresías"].includes(newValue.name)
-                  ? "cashflow-client"
-                  : "select-wallet"
-              }
               monitorField="category"
               shouldHide={(category) => category?.name === "Retiro"}
               justOne
@@ -151,6 +147,21 @@ export const ENTITIES = {
             entity="sale"
             field="amount"
             type="number"
+            disabled={!canUpdate}
+          />
+          <MultiSelect
+            id="select-wallet"
+            form="sale"
+            field="wallet"
+            entity="wallet"
+            justOne
+            hideSearch
+            monitorField="kind"
+            placeholder={(kind) =>
+              kind === "income"
+                ? "¿A dónde ingresó el dinero?"
+                : "¿De dónde salió el dinero?"
+            }
             disabled={!canUpdate}
           />
         </>

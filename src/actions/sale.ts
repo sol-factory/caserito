@@ -51,9 +51,30 @@ export const upsert = async ({ data }, user) => {
       }
     } else {
       const newSale = new SaleModel(sale_data);
-      final_sale_id = newSale._id;
-      await newSale.save({ session });
-      _id = newSale._id;
+      const created = await newSale.save({ session });
+      const wallet = data.wallet;
+      if (wallet._id) {
+        await CashflowModel.create({
+          company_id: user.company._id,
+          store_id: user.store._id,
+          store: user.store,
+          amount: data.kind === "income" ? 1 : -1 * data.amount,
+          kind: data.kind,
+          category: data.category,
+          sub_category: data.sub_category,
+          wallet: { ...wallet, logo_url: wallet.pre_name },
+          currency: "ars",
+          sale_id: newSale._id,
+          ...saleMetadata,
+        });
+        const updated = await SaleModel.findByIdAndUpdate(
+          created._id,
+          {
+            gathered_amount: created.amount,
+          },
+          { session }
+        );
+      }
     }
 
     await commitTransaction(session);
