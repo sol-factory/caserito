@@ -950,7 +950,7 @@ export const ENTITIES = {
         );
       },
     ],
-    menu_item: true,
+    menu_item: false,
     menu_item_name: "Instituciones",
     icon: <BuildingIcon className={iconsClasses} />,
     show: (role: ROLE, is_developer) =>

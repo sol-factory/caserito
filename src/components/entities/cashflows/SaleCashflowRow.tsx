@@ -27,6 +27,7 @@ const SaleCashflowRow = ({ c, selectedId }) => {
           const isSelected = selectedId === c._id;
 
           update("cashflow", {
+            ...c,
             _id: isSelected ? "" : c._id,
             wallet: isSelected ? "" : c.wallet,
             sale_id: c.sale_id,
