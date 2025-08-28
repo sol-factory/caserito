@@ -38,10 +38,20 @@ export const upsert = async ({ data }, user) => {
         session,
       });
       old_amount = oldSale.amount;
-      await CashflowModel.updateMany(
-        { sale_id: data._id },
-        { $set: { details: data.detail } }
-      );
+      const prefix = data.detail ? `${data.detail}.  ` : "";
+
+      await CashflowModel.updateMany({ sale_id: data._id }, [
+        {
+          $set: {
+            details: {
+              $concat: [
+                prefix, // literal desde tu código
+                { $ifNull: ["$details", ""] }, // campo del doc
+              ],
+            },
+          },
+        },
+      ]);
       if (oldSale.date.toString() !== data.date.toString()) {
         await CashflowModel.updateMany(
           { sale_id: data._id },
