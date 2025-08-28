@@ -135,6 +135,7 @@ export const CONFIG = {
       password: "|aDj)KI0",
     },
   },
+  nota_credito_id: "68b070046e14411ac916d3c7",
   screens: {
     sales: {
       _id: "67766b3d65b6074adf631c3a",

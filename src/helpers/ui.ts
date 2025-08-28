@@ -19,7 +19,7 @@ import autoTable from "jspdf-autotable";
 import { getResizedImages } from "./pdf";
 import { svgToPngDataUrl } from "./images";
 import { svg2pdf } from "svg2pdf.js";
-import { COUNTRIES } from "@/config/constanst";
+import { CONFIG, COUNTRIES } from "@/config/constanst";
 import { splitByCurrency } from "./arrays";
 
 // import roboto from "../../fonts/roboto-regular-normal.js";
@@ -122,7 +122,9 @@ export type TPossibleTemplates = {
 export const getWalletUrl = (wallet) => {
   return wallet.name === "Efectivo"
     ? "https://7jwlofbzaq4pzktn.public.blob.vercel-storage.com/billetes.png"
-    : wallet.url || wallet.logo_url;
+    : wallet._id === CONFIG.nota_credito_id
+      ? "https://7jwlofbzaq4pzktn.public.blob.vercel-storage.com/contrato.png"
+      : wallet.url || wallet.logo_url;
 };
 
 export const genTemplatePlaceholder = (name: TPossibleTemplatesNames) => {

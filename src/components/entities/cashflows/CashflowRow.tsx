@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import AttachmentsCounter from "../attachments/AttachmentsCounter";
 import MyInfoTooltip from "@/components/custom-ui/MyInfoTooltip";
 import { getWalletUrl } from "@/helpers/ui";
+import { CONFIG } from "@/config/constanst";
 
 const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
   const { isOwner } = usePermissions();
@@ -41,7 +42,7 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
                 className={`w-6 h-fit object-contain ${c.wallet.name === "Efectivo" ? "mt-0.5" : ""}`}
               />
               <span className="text-[0.6rem] font-extralight text-muted-foreground">
-                {c.wallet?.name}
+                {c.wallet._id === CONFIG.nota_credito_id ? "" : c.wallet?.name}
               </span>
             </div>
           </div>

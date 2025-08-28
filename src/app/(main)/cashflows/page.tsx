@@ -347,7 +347,9 @@ export default async function Cashflows({ searchParams }) {
         />
 
         <WalletsSummary
-          gatheredByWallet={gatheredByWallet}
+          gatheredByWallet={gatheredByWallet.filter(
+            (w) => w._id !== "68b070046e14411ac916d3c7"
+          )}
           closures={[]}
           date={dateToFilter}
           dayFilters={dayFilters}

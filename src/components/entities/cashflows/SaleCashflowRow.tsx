@@ -30,7 +30,7 @@ const SaleCashflowRow = ({ c, selectedId }) => {
             _id: isSelected ? "" : c._id,
             wallet: isSelected ? "" : c.wallet,
             sale_id: c.sale_id,
-            amount: isSelected ? "" : c.amount,
+            amount: isSelected ? "" : Math.abs(c.amount),
             exchange_rate: isSelected ? "" : c.exchange_rate,
           });
           update("creating", isSelected);

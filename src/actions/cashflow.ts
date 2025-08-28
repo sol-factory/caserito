@@ -81,8 +81,7 @@ export const upsert = async ({ data }, user) => {
           sale_id,
           {
             $inc: {
-              gathered_amount:
-                cancellingAmount - prevCashflow.cancelling_amount,
+              gathered_amount: amount * coef - prevCashflow.amount,
             },
           },
           { session }

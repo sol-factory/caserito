@@ -212,18 +212,11 @@ export default async function Sales({ searchParams }) {
   if ((isOwner || isManager) && !search) {
     sales = await SaleModel.aggregate(salesPipeline);
 
-    cashflowDateFilters = weekly
-      ? {
-          $and: [
-            { sale_date: { $gte: weekStart } },
-            { sale_date: { $lte: weekEnd } },
-          ],
-        }
-      : {
-          "sale_full_date.day": dateToFilter.getDate(),
-          "sale_full_date.month": dateToFilter.getMonth() + 1,
-          "sale_full_date.year": dateToFilter.getFullYear(),
-        };
+    cashflowDateFilters = {
+      "sale_full_date.day": dateToFilter.getDate(),
+      "sale_full_date.month": dateToFilter.getMonth() + 1,
+      "sale_full_date.year": dateToFilter.getFullYear(),
+    };
     if (!!client_id) {
       cashflowDateFilters = {
         $and: [
