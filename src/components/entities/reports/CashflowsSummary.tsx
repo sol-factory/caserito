@@ -323,12 +323,6 @@ const CashflowsSummary = ({
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <CashflowSummaryUSDTooltip
-                            c={{ ...s, id: s.sub_category?.name }}
-                            id={s.sub_category?.name}
-                            entityName="movimiento"
-                            exchange_rate={aquapp_rate}
-                          />
                           <span className={filterClasses}>
                             {toMoney(s.total_amount, true)}
                           </span>

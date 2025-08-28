@@ -7,6 +7,7 @@ import { verifySession } from "@/helpers/auth";
 import { getWorkplace } from "@/helpers/mdb";
 import { cleanRegExp } from "@/helpers/text";
 import connectDB from "@/lib/connectDB";
+import { CashflowModel } from "@/schemas/cashflow";
 import WalletModel from "@/schemas/wallet";
 
 export default async function Wallets({ searchParams }) {
@@ -39,7 +40,6 @@ export default async function Wallets({ searchParams }) {
           },
         },
         currency: 1,
-        balance: 1,
         logo_url: "$institution.logo_url",
       },
     },
@@ -58,6 +58,21 @@ export default async function Wallets({ searchParams }) {
   }
   const wallets = await WalletModel.aggregate(pipeline);
 
+  const balances = await CashflowModel.aggregate([
+    {
+      $match: {
+        ...getWorkplace(user, true),
+        deleted: false,
+      },
+    },
+    {
+      $group: {
+        _id: "$wallet._id",
+        amount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
   return (
     <Card
       x-chunk="dashboard-06-chunk-0"
@@ -74,10 +89,15 @@ export default async function Wallets({ searchParams }) {
       <CardContent>
         <WalletsTable
           wallets={wallets.map((w) => {
+            const balance = balances.find((b) => b._id === w._id)?.amount || 0;
             if (w.name === "Efectivo") {
-              return { ...w, logo_url: `${CONFIG.blob_url}/billetes.png` };
+              return {
+                ...w,
+                balance,
+                logo_url: `${CONFIG.blob_url}/billetes.png`,
+              };
             } else {
-              return w;
+              return { ...w, balance };
             }
           })}
         />
