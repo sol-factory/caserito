@@ -19,6 +19,8 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
   const filterByClient = !!searchParams.get("client_id");
   const filterBySearch = !!searchParams.get("search");
   const filterBySubCategory = !!searchParams.get("subCategory");
+
+  console.log({ c });
   return (
     <DropdownRow
       item={c}
@@ -38,9 +40,9 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
                 objectFit="cover"
                 className={`w-6 h-fit object-contain ${c.wallet.name === "Efectivo" ? "mt-0.5" : ""}`}
               />
-              {c.wallet?.currency === "usd" ? (
-                <span className="text-lg">🇺🇸</span>
-              ) : null}
+              <span className="text-[0.6rem] font-extralight text-muted-foreground">
+                {c.wallet?.name}
+              </span>
             </div>
           </div>
           <div className={`flex flex-col max-w-48 sm:w-72 items-start pr-3`}>

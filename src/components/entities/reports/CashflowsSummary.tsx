@@ -176,8 +176,14 @@ const CashflowsSummary = ({
           {incomes
             .sort((a, b) => (b.total_amount || 0) - (a.total_amount || 0))
             .map((c) => (
-              <div key={`${c.category?.name}-${c.sub_category?.name}-inc`}>
-                <div className=" flex justify-between items-center text-xs font-light">
+              <div
+                key={`${c.category?.name}-${c.sub_category?.name}-inc`}
+                className={`group ${filter ? "cursor-pointer" : ""} ml-6`}
+                onClick={() =>
+                  handleSubCategoryClick(c.sub_category?.name, c.category?.name)
+                }
+              >
+                <div className=" flex justify-between items-center text-xs font-light group-hover:underline">
                   <div className="flex items-center gap-1.5">
                     <span>{c.sub_category?.name || "Sin subcategoría"}</span>{" "}
                     <span className="font-extralight text-muted-foreground text-[10px]">

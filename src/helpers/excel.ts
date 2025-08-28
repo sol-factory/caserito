@@ -47,7 +47,7 @@ const WALLETS = {
   },
   CHEQUE: {
     _id: "68b052294ed5be4a273a6610",
-    name: "Cheque",
+    name: "cheque",
   },
   BANCO: {
     _id: "68a9e6fcbb3308b111e20dc2",
