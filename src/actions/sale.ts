@@ -55,7 +55,7 @@ export const upsert = async ({ data }, user) => {
           company_id: user.company._id,
           store_id: user.store._id,
           store: user.store,
-          amount: data.kind === "income" ? 1 : -1 * data.amount,
+          amount: (data.kind === "income" ? 1 : -1) * data.amount,
           kind: data.kind,
           category: data.category,
           sub_category: data.sub_category,
