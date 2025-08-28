@@ -15,7 +15,6 @@ const SaleCashflowRow = ({ c, selectedId }) => {
   const cashflow_id = useStore((s) => s.cashflow._id);
   const canUpdate = useStore((s) => s.cashflow.canUpdate);
 
-  console.log({ c });
   return (
     <div
       key={c._id}
@@ -57,6 +56,11 @@ const SaleCashflowRow = ({ c, selectedId }) => {
                   {format(new Date(c.date), "EE dd/MM HH:mm", {
                     locale: es,
                   })}
+                </span>
+              </div>
+              <div className="flex items-center text-[0.5rem] font-extralight -mt-0.5 text-muted-foreground">
+                <span className="text-[0.5rem] text-orange-600 font-extralight mr-2">
+                  {c.detail}
                 </span>
               </div>
             </div>

@@ -5,7 +5,6 @@ import MultiSelect from "@/components/custom-ui/MultiSelect";
 import MyInput from "@/components/custom-ui/MyInput";
 import useFlags from "@/hooks/use-falgs";
 import { differenceInCalendarDays } from "date-fns";
-import CancellingAmount from "./CancellingAmount";
 import { useStore } from "@/stores";
 
 const MainCashflowForm = ({ user, canUpdate, state, canCreate }) => {
