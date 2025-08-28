@@ -6,9 +6,12 @@ import MyInput from "@/components/custom-ui/MyInput";
 import useFlags from "@/hooks/use-falgs";
 import { differenceInCalendarDays } from "date-fns";
 import CancellingAmount from "./CancellingAmount";
+import { useStore } from "@/stores";
 
 const MainCashflowForm = ({ user, canUpdate, state, canCreate }) => {
   const { getFlag } = useFlags();
+  const kind = useStore((s) => s.sale.kind);
+
   return (
     <>
       {user?.role === "Socio" &&
@@ -20,7 +23,7 @@ const MainCashflowForm = ({ user, canUpdate, state, canCreate }) => {
             field="date"
             disabled={!canUpdate}
             fromDateField={"sale_date"}
-            placeholder="Fecha de cobro"
+            placeholder="Fecha de movimiento"
             toDate={new Date()}
           />
         )}
@@ -35,6 +38,12 @@ const MainCashflowForm = ({ user, canUpdate, state, canCreate }) => {
           autoFocus
           hideSearch
           idToFocusAfterSelection="cashflow-amount"
+          monitorField="sale"
+          placeholder={
+            kind === "income"
+              ? "¿A dónde ingresó el dinero?"
+              : "¿De dónde salió el dinero?"
+          }
           disabled={!canUpdate && !canCreate}
         />
 
@@ -42,11 +51,7 @@ const MainCashflowForm = ({ user, canUpdate, state, canCreate }) => {
           <MyInput
             id="cashflow-amount"
             monitoredField="wallet"
-            placeholder={(wallet) =>
-              !wallet?.currency
-                ? "Monto recibido"
-                : `Monto recibido en ${getFlag(wallet.currency)}`
-            }
+            placeholder="Monto"
             className="w-full"
             inputClassName="w-full"
             entity="cashflow"

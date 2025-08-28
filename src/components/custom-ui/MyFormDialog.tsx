@@ -204,7 +204,6 @@ export function MyFormDialog({
                   : canUpdate === false
                     ? "Detalle"
                     : "Editar"}{" "}
-                {titleName || config.singular}
               </DialogTitle>
             )}
             {fullTitle && <DialogTitle>{fullTitle}</DialogTitle>}

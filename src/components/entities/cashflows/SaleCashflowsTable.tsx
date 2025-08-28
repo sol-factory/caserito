@@ -87,10 +87,12 @@ const SaleCashflowsTable = () => {
 
       <div className="flex flex-col mb-2">
         <div className="flex items-center justify-between text-sm w-full font-normal">
-          <span>Deuda inicial</span> <span>{toMoney(saleNetAmount)}</span>{" "}
+          <span>Monto</span> <span>{toMoney(saleNetAmount)}</span>{" "}
         </div>
 
-        <span className="text-xs underline mt-3 mb-2">Cobros recibidos</span>
+        <span className="text-xs underline mt-3 mb-2">
+          {sale.kind === "income" ? "Cobros recibidos" : "Pagos realizados"}
+        </span>
         {activeCashflows.length === 0 && (
           <span className="text-xs font-extralight text-muted-foreground mt-1 mb-2">
             Aún no se recibieron cobros.
@@ -126,7 +128,7 @@ const SaleCashflowsTable = () => {
           });
         }}
       >
-        <span>Restan recibir </span>
+        <span>{sale.kind === "income" ? "Diferencia" : "Restan pagar"}</span>
         <span>{toMoney(pendingAmount)}</span>
       </div>
     </div>

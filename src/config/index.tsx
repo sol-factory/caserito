@@ -284,7 +284,8 @@ export const ENTITIES = {
               form="cashflow"
               field="wallet_to"
               entity="wallet"
-              placeholder="¿A dónde ingresó el dinero?"
+              monitorField="sale"
+              placeholder={"¿A dónde ingresó el dinero?"}
               justOne
               autoFocus
               hideSearch
@@ -1018,17 +1019,6 @@ export const ENTITIES = {
     menu_item: true,
     menu_item_name: "Instituciones",
     icon: <BuildingIcon className={iconsClasses} />,
-    show: (role: ROLE, is_developer) =>
-      is_developer && process.env.NEXT_PUBLIC_VERCEL_ENV !== "production",
-  },
-  admin: {
-    new: () => ({
-      name: "",
-    }),
-    href: "admin",
-    menu_item: true,
-    menu_item_name: "Admin",
-    icon: <ChartBar className={iconsClasses} />,
     show: (role: ROLE, is_developer) =>
       is_developer && process.env.NEXT_PUBLIC_VERCEL_ENV !== "production",
   },

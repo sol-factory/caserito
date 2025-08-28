@@ -242,8 +242,7 @@ const MultiSelect = <E extends keyof SelectableStates>({
                 {(quantitySelected > 1 || children) && (
                   <span>
                     {quantitySelected}{" "}
-                    {quantitySelected > 1 ? plural : singular} seleccionad
-                    {["vehicle-kind", "screen"].includes(entity) ? "a" : "o"}
+                    {quantitySelected > 1 ? plural : singular} seleccionado
                     {quantitySelected > 1 ? "s" : ""}
                   </span>
                 )}

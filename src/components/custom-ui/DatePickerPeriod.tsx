@@ -26,17 +26,10 @@ import { useState } from "react";
 const PREDEFINED_PERIODS = [
   { key: "this_week", label: "Esta semana" },
   { key: "last_week", label: "Semana pasada" },
-  { key: "next_week", label: "Próxima semana" },
   { key: "this_month", label: "Este mes" },
   { key: "last_month", label: "Mes pasado" },
-  { key: "next_month", label: "Próximo mes" },
   { key: "this_year", label: "Este año" },
   { key: "last_year", label: "Año pasado" },
-  { key: "next_year", label: "Próximo año" },
-  { key: "last_2_years", label: "Últimos 2 años" },
-  { key: "last_3_years", label: "Últimos 3 años" },
-  { key: "last_4_years", label: "Últimos 4 años" },
-  { key: "last_5_years", label: "Últimos 5 años" },
 ];
 
 function capitalize(str: string) {
@@ -189,13 +182,13 @@ export function DatePickerPeriod({ show = false, btnClassName = "" }) {
             <span>{periodLabel || "Seleccionar período"}</span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-3 w-[400px] max-w-[100vw]">
+        <PopoverContent className="p-3 w-[400px] max-w-[300px]">
           <div className="grid grid-cols-2 gap-x-4 text-sm">
             <div className="flex flex-col gap-1">
               <span className="text-muted-foreground text-xs pl-3">
                 Semanas y Meses
               </span>
-              {PREDEFINED_PERIODS.slice(0, 6).map(({ key, label }) => (
+              {PREDEFINED_PERIODS.slice(0, 4).map(({ key, label }) => (
                 <Button
                   key={key}
                   variant="ghost"
@@ -212,7 +205,7 @@ export function DatePickerPeriod({ show = false, btnClassName = "" }) {
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-muted-foreground text-xs pl-3">Años</span>
-              {PREDEFINED_PERIODS.slice(6).map(({ key, label }) => (
+              {PREDEFINED_PERIODS.slice(4).map(({ key, label }) => (
                 <Button
                   key={key}
                   variant="ghost"
