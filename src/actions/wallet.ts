@@ -169,18 +169,22 @@ export const getItems = async (
       _id: { $convert: { input: "$_id", to: "string" } },
       name: 1,
       pre_name: {
-        $cond: [
-          { $eq: ["$name", "Efectivo"] },
-          `${CONFIG.blob_url}/billetes.png`,
-          "$institution.logo_url",
-        ],
-      },
-      detail: {
-        $cond: [
-          { $eq: ["$currency", "usd"] },
-          "🇺🇸 dólares",
-          `${country?.flag || "🇦🇷"} pesos`,
-        ],
+        $switch: {
+          branches: [
+            {
+              // "Efectivo" (case-insensitive)
+              case: { $eq: [{ $toLower: "$name" }, "efectivo"] },
+              then: `${CONFIG.blob_url}/billetes.png`,
+            },
+            {
+              // Mercado Pago
+              case: { $eq: [{ $toString: "$_id" }, CONFIG.nota_credito_id] },
+              then: `${CONFIG.blob_url}/contrato.png`,
+            },
+          ],
+          // Fallback genérico
+          default: `$institution.logo_url`,
+        },
       },
       currency: 1,
     },
