@@ -45,13 +45,9 @@ const WALLETS = {
     _id: "68a9e707bb3308b111e20dd0",
     name: "caserito35.mp",
   },
-  GENERAL: {
-    _id: "68ab40f430752df28fb9d1f7",
-    name: "GENERAL",
-  },
   CHEQUE: {
-    _id: "68a9e6fcbb3308b111e20dc2",
-    name: "caserito35",
+    _id: "68b052294ed5be4a273a6610",
+    name: "Cheque",
   },
   BANCO: {
     _id: "68a9e6fcbb3308b111e20dc2",

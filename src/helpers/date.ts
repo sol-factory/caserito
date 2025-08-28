@@ -67,9 +67,7 @@ export const getUTCOffset = (timeZone, user) => {
 };
 
 export const getUserDate = (user, date = null) => {
-  const utcOffset = getUTCOffset(user?.geo?.timezone || "", user);
-
-  return addMinutes(date ? new Date(date) : new Date(), utcOffset);
+  return addMinutes(date ? new Date(date) : new Date(), -180);
 };
 
 export const getInternazionalizedDate = (year, month, day) => {
