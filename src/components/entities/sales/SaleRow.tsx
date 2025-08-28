@@ -189,7 +189,7 @@ const SaleRow = ({
         </div>
         {s.detail && (
           <div className="flex flex-col ml-3">
-            <span className="font-bold underline">Detalle</span>
+            <span className="font-bold underline">Aclaraciones</span>
             <span className="text-muted-foreground font-light">{s.detail}</span>
           </div>
         )}

@@ -72,7 +72,7 @@ const SaleForm = ({ canUpdate, user }) => {
       />
       <MyInput
         id="sale-detail"
-        placeholder="Detalle..."
+        placeholder="Aclaraciones..."
         entity="sale"
         field="detail"
         disabled={!canUpdate}
