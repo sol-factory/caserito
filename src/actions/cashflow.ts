@@ -302,16 +302,6 @@ export const remove = async (_id: string, user) => {
       return { ok: false, message: "Movimiento no encontrado" };
     }
 
-    const result = await checkWalletClosure({
-      _id: null,
-      new_wallet_id: cf.wallet?._id,
-      new_full_date: cf.full_date,
-    });
-    if (!result.ok) return result;
-
-    // Si ya estaba borrado, no vuelvo a impactar balances
-    const wasAlreadyDeleted = !!cf.deleted;
-
     // 1) Marcar como borrado (soft delete)
     await CashflowModel.findByIdAndUpdate(
       _id,
@@ -324,20 +314,15 @@ export const remove = async (_id: string, user) => {
       { session }
     );
 
-    // 2) Revertir impacto en la Wallet (solo si antes NO estaba borrado)
-    if (!wasAlreadyDeleted) {
-      await incWalletBalance(cf.wallet as any, -cf.amount, session);
-    }
-
     // 3) Revertir impacto en la Venta (si aplica y si no estaba ya borrado)
-    if (!wasAlreadyDeleted && cf.sale_id) {
+    if (cf.sale_id) {
       const saleGatheredAmountField = "gathered_amount";
 
       await SaleModel.findByIdAndUpdate(
         cf.sale_id,
         {
           $inc: {
-            [saleGatheredAmountField]: cf.amount,
+            [saleGatheredAmountField]: cf.amount * -1,
             gatherings: -1,
           },
         },
