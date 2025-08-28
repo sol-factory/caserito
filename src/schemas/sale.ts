@@ -27,6 +27,7 @@ const saleSchema = new Schema(
       _id: { type: Types.ObjectId, ref: "CashflowSubCategory" },
       name: String,
     },
+    detail: String,
     date: Date,
     pick_up_date: Date,
     full_date: {

@@ -38,6 +38,7 @@ import SecondaryCashflowForm from "@/components/entities/cashflows/SecondaryCash
 import WalletRowMenuItems from "@/components/entities/wallets/WalletRowMenuItems";
 import AttachmentRowMenuItems from "@/components/entities/attachments/AttachmentRowMenuItems";
 import WalletClosureForm from "@/components/entities/wallets/WalletClosureForm";
+import SaleForm from "@/components/entities/sales/SaleForm";
 
 export const APP_ROLES = ["Socio", "Admin", "Developer"] as const;
 export type ROLE = (typeof APP_ROLES)[number];
@@ -64,6 +65,7 @@ export const ENTITIES = {
     new: () => ({
       _id: "",
       kind: "egress",
+      detail: "",
       date: new Date().toUTCString(),
       pick_up_date: null,
       amount: null,
@@ -86,90 +88,7 @@ export const ENTITIES = {
     placeholder: "Operación",
     href: "washes",
     fields: [
-      ({ user, canUpdate }) => (
-        <>
-          <ToogleCashflowKind
-            form="sale"
-            field="kind"
-            value1="egress"
-            value2="income"
-          />
-          <div className="flex items-center gap-2">
-            <MultiSelect
-              id="select-category"
-              form="sale"
-              field="category"
-              entity="cashflow"
-              placeholder="Categoría"
-              action="getCategories"
-              flag="kind"
-              justOne
-              autoFocus
-              hideSearch
-              className="min-w-20"
-              idToFocusAfterSelection="select-sub-category"
-              resetOnSelect="sub_category"
-              disabled={!canUpdate}
-            />
-            <MultiSelect
-              id="select-sub-category"
-              form="sale"
-              field="sub_category"
-              entity="cashflow"
-              action="getSubCategories"
-              filterIdField="category"
-              placeholder="Subcategoría"
-              monitorField="category"
-              shouldHide={(category) => category?.name === "Retiro"}
-              justOne
-              autoFocus
-              disabled={!canUpdate}
-            />
-          </div>
-          <div className="flex gap-1 w-full">
-            <DatePicker
-              id="sale-date-picker"
-              entity="sale"
-              field="date"
-              placeholder="Fecha de operación"
-              fromDate={
-                user.role === "Socio" ? new Date(2025, 0, 1) : new Date()
-              }
-              disabled={!canUpdate}
-              // toDate={addDays(new Date(), 6)}
-            />
-            <MyTimeInput disabled={!canUpdate} form="sale" field="date" />
-          </div>
-
-          <MyInput
-            id="sale-amount"
-            placeholder="Monto"
-            entity="sale"
-            field="amount"
-            type="number"
-            disabled={!canUpdate}
-          />
-          <div className="flex items-center gap-2 mt-10">
-            <span className=" underline font-bold">Saldar movimiento </span>
-            <span className="font-extralight text-sm">(opcional)</span>
-          </div>
-          <MultiSelect
-            id="select-wallet"
-            form="sale"
-            field="wallet"
-            entity="wallet"
-            justOne
-            hideSearch
-            monitorField="kind"
-            placeholder={(kind) =>
-              kind === "income"
-                ? "¿A dónde ingresó el dinero?"
-                : "¿De dónde salió el dinero?"
-            }
-            disabled={!canUpdate}
-          />
-        </>
-      ),
+      ({ user, canUpdate }) => <SaleForm user={user} canUpdate={canUpdate} />,
     ],
     menu_item: true,
     menu_item_name: "Operaciones",

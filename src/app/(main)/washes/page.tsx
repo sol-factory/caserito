@@ -171,6 +171,7 @@ export default async function Sales({ searchParams }) {
         },
       },
     },
+    detail: 1,
     gathered_amount: 1,
   };
 

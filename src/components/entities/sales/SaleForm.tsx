@@ -70,6 +70,13 @@ const SaleForm = ({ canUpdate, user }) => {
         type="number"
         disabled={!canUpdate}
       />
+      <MyInput
+        id="sale-detail"
+        placeholder="Detalle..."
+        entity="sale"
+        field="detail"
+        disabled={!canUpdate}
+      />
       {kind && (
         <>
           <div className="flex items-center gap-2 mt-10">

@@ -25,6 +25,7 @@ export const upsert = async ({ data }, user) => {
       kind: data.kind,
       category: data.category,
       sub_category: data.sub_category,
+      detail: data.detail,
       creator: user,
       ...saleMetadata,
       search_field: `${data.category.name} ${data.sub_category.name}`,
@@ -37,6 +38,10 @@ export const upsert = async ({ data }, user) => {
         session,
       });
       old_amount = oldSale.amount;
+      await CashflowModel.updateMany(
+        { sale_id: data._id },
+        { $set: { details: data.detail } }
+      );
       if (oldSale.date.toString() !== data.date.toString()) {
         await CashflowModel.updateMany(
           { sale_id: data._id },
@@ -60,6 +65,7 @@ export const upsert = async ({ data }, user) => {
           category: data.category,
           sub_category: data.sub_category,
           wallet: { ...wallet, logo_url: wallet.pre_name },
+          details: data.detail || "",
           currency: "ars",
           sale_id: newSale._id,
           ...saleMetadata,
