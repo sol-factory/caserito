@@ -149,6 +149,10 @@ export const ENTITIES = {
             type="number"
             disabled={!canUpdate}
           />
+          <div className="flex items-center gap-2 mt-10">
+            <span className=" underline font-bold">Saldar movimiento </span>
+            <span className="font-extralight text-sm">(opcional)</span>
+          </div>
           <MultiSelect
             id="select-wallet"
             form="sale"

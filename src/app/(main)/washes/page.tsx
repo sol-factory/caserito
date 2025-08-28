@@ -185,7 +185,7 @@ export default async function Sales({ searchParams }) {
   ];
 
   if (!!search) {
-    salesPipeline.push({ $limit: 20 });
+    salesPipeline.push({ $limit: 200 });
   }
 
   let match: any = {
