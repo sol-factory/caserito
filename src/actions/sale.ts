@@ -34,7 +34,6 @@ export const upsert = async ({ data }, user) => {
 
     let old_amount = 0;
 
-    let final_sale_id = data._id;
     if (editing) {
       const oldSale = await SaleModel.findByIdAndUpdate(_id, sale_data, {
         session,
