@@ -42,6 +42,7 @@ function groupSpentsByCategory(spents) {
         category: { _id: r.category?._id, name: catName },
         total_amount: 0,
         total_count: 0,
+        operation_amount: 0,
         _subs: new Map(),
       };
       catMap.set(catId, cat);
@@ -49,6 +50,7 @@ function groupSpentsByCategory(spents) {
 
     cat.total_amount += r.total_amount || 0;
     cat.total_count += r.total_count || 0;
+    cat.operation_amount += r.operation_amount || 0;
 
     const subId = r.sub_category?._id || r.sub_category?.name || "default";
     const subName = r.sub_category?.name || "Sin subcategoría";
@@ -58,17 +60,20 @@ function groupSpentsByCategory(spents) {
         sub_category: { _id: r.sub_category?._id, name: subName },
         total_amount: 0,
         total_count: 0,
+        operation_amount: 0,
       };
       cat._subs.set(subId, sub);
     }
     sub.total_amount += r.total_amount || 0;
     sub.total_count += r.total_count || 0;
+    sub.operation_amount += r.operation_amount || 0;
   }
 
   const grouped = Array.from(catMap.values()).map((cat) => ({
     category: cat.category,
     total_amount: cat.total_amount,
     total_count: cat.total_count,
+    operation_amount: cat.operation_amount,
     subcategories: Array.from(cat._subs.values()).sort(
       (a: any, b: any) => a.total_amount - b.total_amount // más gasto (más negativo) primero
     ),
@@ -154,7 +159,7 @@ const CashflowsSummary = ({
   const spentsGrouped = groupSpentsByCategory(spents);
 
   return (
-    <Card className="outline-none w-full min-w-[20rem] sm:max-w-[26rem] rounded-none sm:rounded-2xl">
+    <Card className="outline-none w-full min-w-[20rem] sm:max-w-[40rem] rounded-none sm:rounded-2xl">
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle className="text-xl">{title}</CardTitle>
@@ -228,11 +233,11 @@ const CashflowsSummary = ({
           {spentsGrouped.map((cat) => (
             <div key={cat.category?._id || cat.category?.name || "cat"}>
               {/* Cabecera de categoría */}
-              <div className=" flex justify-between items-center text-xs font-medium mt-1">
-                <div className="flex items-center gap-1.5">
+              <div className=" flex justify-between items-start text-xs font-medium mt-1">
+                <div className="flex items-start gap-1.5 mt-0.5">
                   {showCategories.includes(cat.category.name) ? (
                     <Eye
-                      className="w-3 h-3 hover:text-blue-600 cursor-pointer"
+                      className="w-3 h-3 hover:text-blue-600 cursor-pointer mt-0.5"
                       strokeWidth={1}
                       onClick={() =>
                         setShowCategories([
@@ -242,7 +247,7 @@ const CashflowsSummary = ({
                     />
                   ) : (
                     <EyeClosed
-                      className="w-3 h-3 hover:text-blue-600 cursor-pointer"
+                      className="w-3 h-3 hover:text-blue-600 cursor-pointer mt-0.5"
                       strokeWidth={1}
                       onClick={() =>
                         setShowCategories(
@@ -268,9 +273,17 @@ const CashflowsSummary = ({
                     %
                   </span>
                 </div>
-                <span className="text-chart-3">
-                  {toMoney(cat.total_amount, true)}
-                </span>
+                <div className="flex flex-col text-end">
+                  {Math.abs(cat.operation_amount) !==
+                    Math.abs(cat.total_amount) && (
+                    <span className="text-chart-5">
+                      {toMoney(cat.operation_amount, true)}
+                    </span>
+                  )}
+                  <span className="text-chart-3">
+                    {toMoney(cat.total_amount, true)}
+                  </span>
+                </div>
               </div>
 
               {/* Subcategorías dentro de la categoría */}

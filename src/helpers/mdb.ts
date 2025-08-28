@@ -1069,176 +1069,6 @@ export function addToSummary(summary, delta) {
   summary.usd_total_amount = summary.usd_amount + summary.amount_converted;
 }
 
-export const getSalesEvolutionAggregation = (period: string) => {
-  const isYearly = period.includes("year");
-
-  let groupStage = getGroupStageFromPeriod(period);
-
-  groupStage = {
-    ...groupStage,
-    store_id: "$store_id",
-  };
-
-  return [
-    // === Cálculos previos ===
-    {
-      $addFields: {
-        netAmount: {
-          $subtract: [
-            { $ifNull: ["$amount", 0] },
-            { $ifNull: ["$discounts_amount", 0] },
-          ],
-        },
-        netUsd: {
-          $subtract: [
-            { $ifNull: ["$usd_amount", 0] },
-            { $ifNull: ["$usd_discounts_amount", 0] },
-          ],
-        },
-      },
-    },
-    {
-      $addFields: {
-        debtAmount: {
-          $max: [{ $subtract: ["$netAmount", "$gathered_amount"] }, 0],
-        },
-        debtUsd: {
-          $max: [{ $subtract: ["$netUsd", "$usd_gathered_amount"] }, 0],
-        },
-        tipRaw: {
-          $subtract: ["$gathered_amount", "$netAmount"],
-        },
-        usdTipRaw: {
-          $subtract: ["$usd_gathered_amount", "$netUsd"],
-        },
-      },
-    },
-
-    // === Agrupación ===
-    {
-      $group: {
-        _id: groupStage,
-
-        // Ventas
-        amount: { $sum: "$amount" },
-        count: { $sum: { $cond: [{ $gt: ["$amount", 0] }, 1, 0] } },
-        usd_amount: { $sum: "$usd_amount" },
-        usd_count: { $sum: { $cond: [{ $gt: ["$usd_amount", 0] }, 1, 0] } },
-        total_count: {
-          $sum: {
-            $cond: [
-              {
-                $or: [{ $gt: ["$amount", 0] }, { $gt: ["$usd_amount", 0] }],
-              },
-              1,
-              0,
-            ],
-          },
-        },
-
-        // Cobros
-        gathered_amount: { $sum: "$gathered_amount" },
-        gathered_count: {
-          $sum: { $cond: [{ $gt: ["$gathered_amount", 0] }, 1, 0] },
-        },
-        usd_gathered_amount: { $sum: "$usd_gathered_amount" },
-        usd_gathered_count: {
-          $sum: { $cond: [{ $gt: ["$usd_gathered_amount", 0] }, 1, 0] },
-        },
-
-        // Descuentos
-        discounts_amount: { $sum: "$discounts_amount" },
-        discounts_count: {
-          $sum: { $cond: [{ $gt: ["$discounts_amount", 0] }, 1, 0] },
-        },
-        usd_discounts_amount: { $sum: "$usd_discounts_amount" },
-        usd_discounts_count: {
-          $sum: { $cond: [{ $gt: ["$usd_discounts_amount", 0] }, 1, 0] },
-        },
-
-        // Propinas
-        netAmount: { $sum: "$netAmount" },
-        netUsd: { $sum: "$netUsd" },
-        tipRaw: { $sum: "$tipRaw" },
-        usdTipRaw: { $sum: "$usdTipRaw" },
-        tip_count: {
-          $sum: { $cond: [{ $gt: ["$tipRaw", 0] }, 1, 0] },
-        },
-        usd_tip_count: {
-          $sum: { $cond: [{ $gt: ["$usdTipRaw", 0] }, 1, 0] },
-        },
-
-        // Deudas
-        debtAmount: { $sum: "$debtAmount" },
-        debtUsd: { $sum: "$debtUsd" },
-        debt_count: {
-          $sum: { $cond: [{ $gt: ["$debtAmount", 0] }, 1, 0] },
-        },
-        usd_debt_count: {
-          $sum: { $cond: [{ $gt: ["$debtUsd", 0] }, 1, 0] },
-        },
-      },
-    },
-
-    // === Normalización de fechas ===
-    {
-      $addFields: {
-        day: { $ifNull: ["$_id.day", 1] },
-        month: { $ifNull: ["$_id.month", 1] },
-        year: "$_id.year",
-      },
-    },
-    {
-      $unset: "date",
-    },
-    // === Resultado final ===
-    {
-      $project: {
-        _id: 0,
-        store_id: { $toString: "$_id.store_id" },
-        date: {
-          $dateFromParts: {
-            year: "$_id.year",
-            month: { $ifNull: ["$_id.month", 1] },
-            day: { $ifNull: ["$_id.day", 1] },
-          },
-        },
-
-        // Ventas
-        amount: 1,
-        usd_amount: 1,
-        count: 1,
-        usd_count: 1,
-        total_count: 1,
-
-        // Cobros
-        gathered_amount: 1,
-        usd_gathered_amount: 1,
-        gathered_count: 1,
-        usd_gathered_count: 1,
-
-        // Descuentos
-        discounts_amount: 1,
-        usd_discounts_amount: 1,
-        discounts_count: 1,
-        usd_discounts_count: 1,
-
-        // Propinas
-        tipAmount: { $max: ["$tipRaw", 0] },
-        usdTipAmount: { $max: ["$usdTipRaw", 0] },
-        tip_count: 1,
-        usd_tip_count: 1,
-
-        // Deudas
-        debtAmount: 1,
-        debtUsd: 1,
-        debt_count: 1,
-        usd_debt_count: 1,
-      },
-    },
-  ];
-};
-
 export const getExchangePeriodMatch = (
   period: string,
   today = new Date()
@@ -1555,6 +1385,63 @@ export const getCashflowsEvolutionAggregation = (period: string) => {
         total_count: {
           $add: ["$count", "$usd_count"],
         },
+      },
+    },
+    {
+      $sort: {
+        date: 1,
+        kind: 1,
+        "category.name": 1,
+        "sub_category.name": 1,
+      },
+    },
+  ];
+};
+
+export const getSalesSummary = (period: string) => {
+  let groupStage = getGroupStageFromPeriod(period);
+
+  groupStage = {
+    ...groupStage,
+    store_id: "$store_id",
+  };
+
+  return [
+    {
+      $group: {
+        _id: {
+          kind: "$kind",
+          category: "$category.name",
+          sub_category: "$sub_category.name",
+        },
+        amount: {
+          $sum: "$amount",
+        },
+        count: {
+          $sum: { $cond: [{ $ne: ["$wallet.currency", "usd"] }, 1, 0] },
+        },
+      },
+    },
+    {
+      $addFields: {
+        date: {
+          $dateFromParts: {
+            year: "$_id.year",
+            month: { $ifNull: ["$_id.month", 1] },
+            day: { $ifNull: ["$_id.day", 1] },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        date: 1,
+        kind: "$_id.kind",
+        category: { name: "$_id.category" },
+        sub_category: { name: "$_id.sub_category" },
+        count: 1,
+        amount: 1,
       },
     },
     {

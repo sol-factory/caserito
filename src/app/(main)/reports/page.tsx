@@ -10,10 +10,12 @@ import {
   getExchangeAveragesAggregation,
   getWorkplace,
   mergeCashflowsEvolutionWithRates,
+  getSalesSummary,
 } from "@/helpers/mdb";
 import connectDB from "@/lib/connectDB";
 import { CashflowModel } from "@/schemas/cashflow";
 import ExchangeModel from "@/schemas/exchange";
+import { SaleModel } from "@/schemas/sale";
 import { redirect } from "next/navigation";
 
 export default async function DashboardPage({ searchParams }) {
@@ -55,9 +57,16 @@ export default async function DashboardPage({ searchParams }) {
   const cashflowsEvolutionPipeline = getCashflowsEvolutionAggregation(
     period
   ) as any;
+
   const cashflowsEvolution = await CashflowModel.aggregate([
     { $match: matchStage },
     ...cashflowsEvolutionPipeline,
+  ]);
+
+  const salesSummaryPipeline = getSalesSummary(period) as any;
+  const salesSummary = await SaleModel.aggregate([
+    { $match: matchStage },
+    ...salesSummaryPipeline,
   ]);
 
   const finalCashflowsEvolution = mergeCashflowsEvolutionWithRates(
@@ -67,11 +76,27 @@ export default async function DashboardPage({ searchParams }) {
 
   const cashflowsSummary = await getCashflowsSummary(cashflowsEvolution);
 
+  function mergeOperationAmount(salesSummary, cashflowsSummary) {
+    const dict = new Map<string, number>(
+      salesSummary.map((s) => [
+        `${s.category.name}-${s.sub_category.name}`,
+        s.amount,
+      ])
+    );
+
+    return cashflowsSummary.map((c) => ({
+      ...c,
+      operation_amount: dict.get(c.id) ?? 0, // o null
+    }));
+  }
+
+  const cashflowsWithOp = mergeOperationAmount(salesSummary, cashflowsSummary);
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col md:flex-row sm:items-start gap-3">
         <CashflowsSummary
-          cashflowsSummary={cashflowsSummary}
+          cashflowsSummary={cashflowsWithOp}
           filter
           title="Flujo de dinero del período"
           period={period}
