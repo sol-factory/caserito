@@ -15,8 +15,6 @@ export const upsert = async ({ data }, user) => {
   const editing = !!data._id;
 
   try {
-    let _id = data._id;
-
     const saleMetadata = await getSaleMetadata(data, user);
 
     const sale_data = {
@@ -35,13 +33,13 @@ export const upsert = async ({ data }, user) => {
     let old_amount = 0;
 
     if (editing) {
-      const oldSale = await SaleModel.findByIdAndUpdate(_id, sale_data, {
+      const oldSale = await SaleModel.findByIdAndUpdate(data._id, sale_data, {
         session,
       });
       old_amount = oldSale.amount;
       if (oldSale.date.toString() !== data.date.toString()) {
         await CashflowModel.updateMany(
-          { sale_id: _id },
+          { sale_id: data._id },
           {
             sale_date: data.date,
             sale_full_date: sale_data.full_date,
