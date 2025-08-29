@@ -196,7 +196,7 @@ const CashflowsSummary = ({
                       <span className="text-blue-600">
                         {total_income
                           ? (
-                              ((c.total_amount || 0) / total_income) *
+                              ((c.total_amount || 0) / (total_income || 1)) *
                               100
                             ).toFixed(2)
                           : "0.00"}
@@ -270,27 +270,28 @@ const CashflowsSummary = ({
                     Math.abs(cat.total_amount) && (
                     <span className="text-chart-5">
                       <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
-                        {total_spent
+                        {total_spent && total_income > 0
                           ? (
-                              ((cat.operation_amount || 0) / total_income) *
+                              ((cat.operation_amount || 0) /
+                                (total_income || 1)) *
                               100
                             ).toFixed(2)
-                          : "0.00"}
-                        %
+                          : ""}
+                        {total_income > 0 ? "%" : ""}
                       </span>
                       {toMoney(cat.operation_amount, true)}
                     </span>
                   )}
                   <span className="text-chart-3">
                     <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
-                      {total_spent
+                      {total_spent && total_income > 0
                         ? (
-                            ((cat.total_amount || 0) / total_income) *
+                            ((cat.total_amount || 0) / (total_income || 1)) *
                             100 *
                             -1
                           ).toFixed(2)
-                        : "0.00"}
-                      %
+                        : ""}
+                      {total_income > 0 ? "%" : ""}
                     </span>
                     {toMoney(cat.total_amount, true)}
                   </span>
@@ -299,7 +300,7 @@ const CashflowsSummary = ({
 
               {/* Subcategorías dentro de la categoría */}
               {showCategories.includes(cat.category.name) && (
-                <div className="flex flex-col gap-1 mt-3">
+                <div className="flex flex-col w-full gap-1 mt-3">
                   {cat.subcategories.map((s: any) => (
                     <div
                       key={
@@ -329,14 +330,14 @@ const CashflowsSummary = ({
                             Math.abs(s.total_amount) && (
                             <span className="text-chart-5">
                               <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
-                                {s.operation_amount
+                                {s.operation_amount && total_income > 0
                                   ? (
                                       ((s.operation_amount || 0) /
-                                        total_income) *
+                                        (total_income || 1)) *
                                       100
                                     ).toFixed(2)
-                                  : "0.00"}
-                                %
+                                  : ""}
+                                {total_income > 0 ? "%" : ""}
                               </span>
                               {toMoney(s.operation_amount, true)}
                             </span>
@@ -345,7 +346,8 @@ const CashflowsSummary = ({
                             <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
                               {s.total_amount
                                 ? (
-                                    ((s.total_amount || 0) / total_income) *
+                                    ((s.total_amount || 0) /
+                                      (total_income || 1)) *
                                     100 *
                                     -1
                                   ).toFixed(2)
@@ -409,14 +411,14 @@ const CashflowsSummary = ({
                   <span className={filterClasses}>{c.sub_category?.name}</span>{" "}
                   <span className="font-extralight text-muted-foreground text-[10px]">
                     (<span>{c.total_count || 0}</span>)
-                    <span className="text-blue-600 ml-1">
-                      {total_invested
+                    <span className="text-chat-2 ml-1">
+                      {total_invested && total_income > 0
                         ? (
-                            ((c.total_amount || 0) / total_invested) *
+                            ((c.total_amount || 0) / total_income) *
                             100
                           ).toFixed(2)
-                        : "0.00"}
-                      %
+                        : ""}
+                      {total_income > 0 ? "%" : ""}
                     </span>
                   </span>
                 </div>
