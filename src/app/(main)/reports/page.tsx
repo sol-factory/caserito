@@ -1,6 +1,7 @@
 import { CashflowsEvolutionChart } from "@/components/entities/reports/CashflowsEvolutionChart";
 import CashflowsSummary from "@/components/entities/reports/CashflowsSummary";
 import WalletsSummary from "@/components/entities/reports/WalletsSummary";
+import { CONFIG } from "@/config/constanst";
 import { verifySession } from "@/helpers/auth";
 import { getPeriodFilter } from "@/helpers/date";
 import {
@@ -103,7 +104,13 @@ export default async function DashboardPage({ searchParams }) {
           aquapp_rate={avg_aquapp_rate}
         />
 
-        <WalletsSummary gatheredByWallet={cashflowsByWallet} />
+        <WalletsSummary
+          gatheredByWallet={
+            cashflowsByWallet?.filter(
+              (w) => w._id !== CONFIG.nota_credito_id
+            ) || []
+          }
+        />
       </div>
       <CashflowsEvolutionChart
         data={finalCashflowsEvolution}
