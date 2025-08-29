@@ -229,11 +229,11 @@ const CashflowsSummary = ({
           </span>
         </div>
 
-        <div className="flex flex-col gap-1 mt-1">
+        <div className="flex flex-col gap-1 mt-1 w-full">
           {spentsGrouped.map((cat) => (
             <div key={cat.category?._id || cat.category?.name || "cat"}>
               {/* Cabecera de categoría */}
-              <div className=" flex justify-between items-start text-xs font-medium mt-1">
+              <div className=" flex w-full justify-between items-start text-xs font-medium mt-1">
                 <div className="flex items-start gap-1.5 mt-0.5">
                   {showCategories.includes(cat.category.name) ? (
                     <Eye
@@ -316,7 +316,7 @@ const CashflowsSummary = ({
                         )
                       }
                     >
-                      <div className=" flex justify-between items-center text-xs font-light">
+                      <div className=" flex w-full justify-between items-center text-xs font-light">
                         <div className="flex items-center gap-1.5">
                           <span className={filterClasses}>
                             {s.sub_category?.name || "Sin subcategoría"}
