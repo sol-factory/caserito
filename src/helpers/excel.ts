@@ -197,7 +197,13 @@ export async function importExcelCashflows(fileName) {
       const montoBoleta = toNumber(row[COLS.montoBoleta]);
       const pagoDiario = toNumber(row[COLS.pagoDiarios]);
       const saleAmount =
-        montoBoleta > 0 ? Math.abs(montoBoleta) : Math.abs(pagoDiario || 0);
+        montoBoleta > 0
+          ? Math.abs(montoBoleta)
+          : catName !== "INSUMOS"
+            ? Math.abs(pagoDiario || 0)
+            : 0;
+
+      console.log({ saleAmount });
       // Para el cashflow uso lo pagado ese día; si no hay, uso el total
       const cashflowAmount = Math.abs(pagoDiario || 0);
 
@@ -206,23 +212,26 @@ export async function importExcelCashflows(fileName) {
       const fullWallet = await WalletModel.findById(wallet?._id);
 
       // --- Crear Sale ---
-      const sale = await SaleModel.create({
-        kind,
-        category,
-        sub_category,
-        date: saleDate,
-        full_date: getFullDate(saleDate),
-        // full_pick_up_date: getFullDate(pickUpDate),
-        amount: saleAmount,
-        gathered_amount: 0,
-        company_id: USER.company._id,
-        store_id: USER.store._id,
-        store: USER.store,
-        creator: USER,
-        search_field:
-          `${category.name} ${sub_category.name} ${normalize(row[COLS.carga])}`.toLowerCase(),
-      });
-      createdSales++;
+      let sale;
+      if (saleAmount > 0) {
+        sale = await SaleModel.create({
+          kind,
+          category,
+          sub_category,
+          date: saleDate,
+          full_date: getFullDate(saleDate),
+          // full_pick_up_date: getFullDate(pickUpDate),
+          amount: saleAmount,
+          gathered_amount: 0,
+          company_id: USER.company._id,
+          store_id: USER.store._id,
+          store: USER.store,
+          creator: USER,
+          search_field:
+            `${category.name} ${sub_category.name} ${normalize(row[COLS.carga])}`.toLowerCase(),
+        });
+        createdSales++;
+      }
 
       // --- Crear Cashflow (1 por fila) ---
       const coef = kind === "income" ? 1 : -1;
@@ -236,9 +245,9 @@ export async function importExcelCashflows(fileName) {
           sub_category,
           company_id: USER.company._id,
           store_id: USER.store._id,
-          sale_id: sale._id,
-          sale_date: sale.date,
-          sale_full_date: sale.full_date,
+          sale_id: sale?._id,
+          sale_date: sale?.date,
+          sale_full_date: sale?.full_date,
           amount: cashflowAmount * coef, // signo según kind
           currency: wallet?.currency,
           exchange_rate: 1,
@@ -250,12 +259,14 @@ export async function importExcelCashflows(fileName) {
           creator: USER,
         });
         createdCashflows++;
+        if (!!sale) {
+          await SaleModel.findByIdAndUpdate(sale._id, {
+            $inc: { gathered_amount: cashflowAmount },
+          });
+        }
       }
 
       // Actualizar gathered_amount de la sale
-      await SaleModel.findByIdAndUpdate(sale._id, {
-        $inc: { gathered_amount: cashflowAmount },
-      });
     } catch (err) {
       console.error("❌ Error en fila:", err.message);
     }

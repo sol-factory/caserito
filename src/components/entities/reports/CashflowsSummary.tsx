@@ -322,8 +322,14 @@ const CashflowsSummary = ({
                             </span>
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <span className={filterClasses}>
+                        <div className="flex flex-col text-end">
+                          {Math.abs(s.operation_amount) !==
+                            Math.abs(s.total_amount) && (
+                            <span className="text-chart-5">
+                              {toMoney(s.operation_amount, true)}
+                            </span>
+                          )}
+                          <span className="text-chart-3">
                             {toMoney(s.total_amount, true)}
                           </span>
                         </div>
