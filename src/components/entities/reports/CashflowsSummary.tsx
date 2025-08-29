@@ -307,7 +307,7 @@ const CashflowsSummary = ({
                         "-" +
                         (cat.category?._id || cat.category?.name)
                       }
-                      className={`group ${filter ? "cursor-pointer" : ""} ml-6`}
+                      className={`flex items-center group ${filter ? "cursor-pointer" : ""} ml-6`}
                       onClick={() =>
                         handleSubCategoryClick(
                           s.sub_category?.name,
