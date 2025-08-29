@@ -83,7 +83,7 @@ export const upsert = async ({ data }, user) => {
           sale_id,
           {
             $inc: {
-              gathered_amount: amount * coef - prevCashflow.amount,
+              gathered_amount: Math.abs(amount) - Math.abs(prevCashflow.amount),
             },
           },
           { session }
@@ -96,7 +96,7 @@ export const upsert = async ({ data }, user) => {
           sale_id,
           {
             $inc: {
-              gathered_amount: cancellingAmount,
+              gathered_amount: Math.abs(amount),
               gatherings: 1,
             },
           },
