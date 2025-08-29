@@ -288,7 +288,7 @@ const CashflowsSummary = ({
 
               {/* Subcategorías dentro de la categoría */}
               {showCategories.includes(cat.category.name) && (
-                <div className="flex flex-col gap-0.5 mt-0.5">
+                <div className="flex flex-col gap-1 mt-3">
                   {cat.subcategories.map((s: any) => (
                     <div
                       key={
@@ -329,9 +329,7 @@ const CashflowsSummary = ({
                               {toMoney(s.operation_amount, true)}
                             </span>
                           )}
-                          <span className="text-chart-3">
-                            {toMoney(s.total_amount, true)}
-                          </span>
+                          <span>{toMoney(s.total_amount, true)}</span>
                         </div>
                       </div>
                     </div>
