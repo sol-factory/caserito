@@ -32,6 +32,7 @@ const cashflowSubCategorySchema = new Schema(
 const cashflowSchema = new Schema(
   {
     detail: String,
+    search_field: String,
     date: Date,
     category: {
       _id: { type: Types.ObjectId, ref: "CashflowCategory" },

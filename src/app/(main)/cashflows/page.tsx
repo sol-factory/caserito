@@ -3,13 +3,7 @@ import { DatePicker } from "@/components/custom-ui/DatePicker";
 import connectDB from "@/lib/connectDB";
 import { cleanRegExp } from "@/helpers/text";
 import { verifySession } from "@/helpers/auth";
-import { getBooleanRoles } from "@/helpers/permissions";
-import {
-  getCashflowsReports,
-  getWorkplace,
-  groupReportsByCategory,
-  toObjectId,
-} from "@/helpers/mdb";
+import { getCashflowsReports, getWorkplace, toObjectId } from "@/helpers/mdb";
 import { MyFormDialog } from "@/components/custom-ui/MyFormDialog";
 import { getPeriodFilter, getUserDate } from "@/helpers/date";
 import { CashflowModel } from "@/schemas/cashflow";
@@ -23,6 +17,7 @@ import WalletsSummary from "@/components/entities/reports/WalletsSummary";
 import ViewDropdown from "@/components/entities/sales/ViewDropdown";
 import SubConceptViewFilter from "@/components/entities/cashflows/SubConceptViewFilter";
 import WalletModel from "@/schemas/wallet";
+import { SaleModel } from "@/schemas/sale";
 
 export default async function Cashflows({ searchParams }) {
   await connectDB();
@@ -74,7 +69,7 @@ export default async function Cashflows({ searchParams }) {
       regex = search;
     }
     delete matchStage["full_date"];
-    matchStage["detail"] = regex;
+    matchStage["search_field"] = regex;
     walletMatchStage = null;
   } else {
     matchStage = {
@@ -221,6 +216,26 @@ export default async function Cashflows({ searchParams }) {
   const aquapp_rate = 1;
 
   const reports = await getCashflowsReports(cashflows, 1);
+
+  // const update = [
+  //   {
+  //     $set: {
+  //       search_field: {
+  //         $toLower: {
+  //           $concat: [
+  //             { $ifNull: ["$category.name", ""] },
+  //             " ",
+  //             { $ifNull: ["$sub_category.name", ""] },
+  //             " ",
+  //             { $ifNull: ["$detail", ""] },
+  //           ],
+  //         },
+  //       },
+  //     },
+  //   },
+  // ];
+  // await CashflowModel.updateMany({}, update);
+  // await SaleModel.updateMany({}, update);
 
   return (
     <div className="pb-40">
