@@ -51,6 +51,8 @@ export const upsert = async ({ data }, user) => {
       client_id: client?._id || null,
       client_name: client?.name || "",
       wallet: { ...wallet, logo_url: wallet.pre_name },
+      search_field:
+        `${sale?.category?.name} ${sale?.sub_category?.name} ${detail || ""}`.toLowerCase(),
       creator: user,
       detail,
     };
