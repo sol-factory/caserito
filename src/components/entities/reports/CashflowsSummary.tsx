@@ -264,23 +264,34 @@ const CashflowsSummary = ({
                       (<span>{cat.total_count}</span>)
                     </span>
                   ) : null}
-                  <span className="font-light ml-1 text-[10px]">
-                    {total_spent
-                      ? (((cat.total_amount || 0) / total_spent) * 100).toFixed(
-                          2
-                        )
-                      : "0.00"}
-                    %
-                  </span>
                 </div>
                 <div className="flex flex-col text-end">
                   {Math.abs(cat.operation_amount) !==
                     Math.abs(cat.total_amount) && (
                     <span className="text-chart-5">
+                      <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
+                        {total_spent
+                          ? (
+                              ((cat.operation_amount || 0) / total_income) *
+                              100
+                            ).toFixed(2)
+                          : "0.00"}
+                        %
+                      </span>
                       {toMoney(cat.operation_amount, true)}
                     </span>
                   )}
                   <span className="text-chart-3">
+                    <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
+                      {total_spent
+                        ? (
+                            ((cat.total_amount || 0) / total_income) *
+                            100 *
+                            -1
+                          ).toFixed(2)
+                        : "0.00"}
+                      %
+                    </span>
                     {toMoney(cat.total_amount, true)}
                   </span>
                 </div>
@@ -311,25 +322,38 @@ const CashflowsSummary = ({
                           </span>{" "}
                           <span className="font-extralight text-muted-foreground text-[10px]">
                             (<span>{s.total_count || 0}</span>)
-                            <span className="text-blue-600 ml-1">
-                              {total_spent
-                                ? (
-                                    ((s.total_amount || 0) / total_spent) *
-                                    100
-                                  ).toFixed(2)
-                                : "0.00"}
-                              %
-                            </span>
                           </span>
                         </div>
                         <div className="flex flex-col text-end">
                           {Math.abs(s.operation_amount) !==
                             Math.abs(s.total_amount) && (
                             <span className="text-chart-5">
+                              <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
+                                {s.operation_amount
+                                  ? (
+                                      ((s.operation_amount || 0) /
+                                        total_income) *
+                                      100
+                                    ).toFixed(2)
+                                  : "0.00"}
+                                %
+                              </span>
                               {toMoney(s.operation_amount, true)}
                             </span>
                           )}
-                          <span>{toMoney(s.total_amount, true)}</span>
+                          <span>
+                            <span className="font-light ml-1 text-[10px] text-chart-2 mr-3">
+                              {s.total_amount
+                                ? (
+                                    ((s.total_amount || 0) / total_income) *
+                                    100 *
+                                    -1
+                                  ).toFixed(2)
+                                : "0.00"}
+                              %
+                            </span>
+                            {toMoney(s.total_amount, true)}
+                          </span>
                         </div>
                       </div>
                     </div>
