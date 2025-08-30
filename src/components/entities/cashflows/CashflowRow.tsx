@@ -4,7 +4,7 @@ import { getCurrencySign } from "@/helpers/currency";
 import { toMoney } from "@/helpers/fmt";
 import useFlags from "@/hooks/use-falgs";
 import usePermissions from "@/hooks/use-permissions";
-import { format } from "date-fns";
+import { addHours, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { ArrowDown, ArrowUp, Clock, MessageCircle, User } from "lucide-react";
 import Image from "next/image";
@@ -65,7 +65,7 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
               />
               <span className="text-muted-foreground text-xs font-extralight mt-0.5">
                 {format(
-                  c.date,
+                  addHours(c.date, 3),
                   filterByClient || filterBySearch || filterBySubCategory
                     ? "EE d MMM HH:mm"
                     : "HH:mm",
