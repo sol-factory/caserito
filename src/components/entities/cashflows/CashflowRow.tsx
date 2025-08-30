@@ -65,7 +65,7 @@ const CasfhlowRow = ({ c, companyName, isLastOne = false }) => {
               />
               <span className="text-muted-foreground text-xs font-extralight mt-0.5">
                 {format(
-                  c.createdAt,
+                  c.date,
                   filterByClient || filterBySearch || filterBySubCategory
                     ? "EE d MMM HH:mm"
                     : "HH:mm",
