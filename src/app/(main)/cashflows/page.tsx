@@ -281,6 +281,12 @@ export default async function Cashflows({ searchParams }) {
                 hideActionButton
                 hidden
               />
+              <MyFormDialog
+                form="cashflow"
+                fieldsIndex={1}
+                user={user}
+                hidden
+              />
             </div>
           </div>
         </CardHeader>

@@ -95,6 +95,7 @@ export function MyFormDialog({
   const cannotCreate = () => {
     notify({ ok: false, message: disabledMessage }, "top-right", 5000);
   };
+  console.log({ form, dialogToOpen });
 
   return (
     <Dialog

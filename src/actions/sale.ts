@@ -43,6 +43,8 @@ export const upsert = async ({ data }, user) => {
       await CashflowModel.updateMany({ sale_id: data._id }, [
         {
           $set: {
+            category: data.category,
+            sub_category: data.sub_category,
             details: {
               $concat: [
                 prefix, // literal desde tu código

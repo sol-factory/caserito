@@ -21,23 +21,27 @@ const CashflowRowMenuItems = ({ c }) => {
         <DropdownMenuItem
           className="flex gap-3 cursor-pointer w-auto"
           onClick={(e) => {
-            e.stopPropagation();
-            update("cashflow", {
-              ...c,
-              date: new Date(
-                c.full_date.year,
-                c.full_date.month - 1,
-                c.full_date.day,
-                10, // para que no se cambie el día
-                0
-              ),
-              kind: c.kind === "Ingreso" ? "income" : "egress",
-              canUpdate: !isServiceGathering,
-              canCreate: false,
-              onlyShow: isServiceGathering || isPast(c.date),
-            });
-            update("openDialog", "cashflow");
-            update("openDialogIndex", 1);
+            try {
+              e.stopPropagation();
+              update("cashflow", {
+                ...c,
+                date: new Date(
+                  c.full_date.year,
+                  c.full_date.month - 1,
+                  c.full_date.day,
+                  10, // para que no se cambie el día
+                  0
+                ),
+                kind: c.kind === "Ingreso" ? "income" : "egress",
+                canUpdate: !isServiceGathering,
+                canCreate: false,
+                onlyShow: isServiceGathering || isPast(c.date),
+              });
+              update("openDialog", "cashflow");
+              update("openDialogIndex", 1);
+            } catch (error) {
+              console.log({ error });
+            }
           }}
         >
           <Eye size={21} />
