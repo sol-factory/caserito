@@ -66,30 +66,12 @@ export const API_ROUTER = async (
         redirectTo: "/",
       };
     }
-    if (
-      action === "upsert" &&
-      entity !== "company" &&
-      user.email !== "mgesualdo14@gmail.com" &&
-      user.email !== "ignaciogesualdo@gmail.com"
-    ) {
-      const company = await CompanyModel.findById(user.company._id, {
-        trial_start_date: 1,
-      });
-      const remainingDays = getRemainingDays(company.trial_start_date);
-      const activeStoreSub = await SubscriptionModel.exists({
-        store_id: user.store._id,
-        status: { $in: ["authorized", "ACTIVE"] },
-      });
 
-      if (!activeStoreSub) {
-        if (remainingDays <= 0) {
-          return {
-            ok: false,
-            message:
-              "Necesita una suscripción activa en esta sucursal para utilizar la aplicación",
-          };
-        }
-      }
+    if (!["alanalvira@hotmail.com"].includes(user.email)) {
+      return {
+        ok: false,
+        message: "Solo Alan 😼 puede crear o ediar información.",
+      };
     }
   }
   try {
