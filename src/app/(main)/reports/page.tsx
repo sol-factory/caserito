@@ -78,17 +78,45 @@ export default async function DashboardPage({ searchParams }) {
   const cashflowsSummary = await getCashflowsSummary(cashflowsEvolution);
 
   function mergeOperationAmount(salesSummary, cashflowsSummary) {
-    const dict = new Map<string, number>(
+    // Diccionario con amounts de sales
+    const dict = new Map(
       salesSummary.map((s) => [
         `${s.category.name}-${s.sub_category.name}`,
         s.amount,
       ])
     );
 
-    return cashflowsSummary.map((c) => ({
-      ...c,
-      operation_amount: dict.get(c.id) ?? 0, // o null
-    }));
+    // Paso 1: Mapear cashflows con operation_amount
+    const merged = cashflowsSummary.map((c) => {
+      const key = `${c.category.name}-${c.sub_category.name}`;
+      return {
+        ...c,
+        operation_amount: dict.get(key) ?? 0,
+      };
+    });
+
+    // Paso 2: Agregar faltantes de sales que no estén en cashflows
+    const existingKeys = new Set(
+      cashflowsSummary.map((c) => `${c.category.name}-${c.sub_category.name}`)
+    );
+
+    for (const s of salesSummary) {
+      const key = `${s.category.name}-${s.sub_category.name}`;
+      const exists = existingKeys.has(key);
+      if (!exists) {
+        merged.push({
+          kind: s.kind,
+          category: s.category,
+          sub_category: s.sub_category,
+          amount: 0, // no había cashflow
+          amount_converted: 0,
+          total_amount: 0,
+          operation_amount: s.amount,
+        });
+      }
+    }
+
+    return merged;
   }
 
   const cashflowsWithOp = mergeOperationAmount(salesSummary, cashflowsSummary);

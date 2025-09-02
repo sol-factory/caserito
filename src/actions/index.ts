@@ -55,6 +55,7 @@ export const API_ROUTER = async (
   const user = await verifySession();
   if (
     action !== "login" &&
+    action !== "logout" &&
     action !== "getLoginCode" &&
     action !== "createEvent" &&
     entity !== "member"

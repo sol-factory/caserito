@@ -102,7 +102,7 @@ const CashflowsSummary = ({
   );
 
   const onlyNegatives = (cashflowsSummary || []).filter(
-    (c) => (c.total_amount || 0) < 0
+    (c) => (c.total_amount || 0) < 0 || c.kind === "egress"
   );
 
   const investments = onlyNegatives.filter((c) =>
@@ -152,7 +152,7 @@ const CashflowsSummary = ({
       );
     }
   };
-
+  console.log({ spents });
   const filterClasses = filter ? "group-hover:underline" : "";
 
   // Agrupar gastos por categoría y subcategoría
