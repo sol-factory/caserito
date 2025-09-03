@@ -23,6 +23,7 @@ const cashflowSubCategorySchema = new Schema(
     },
     kind: String,
     company_id: { type: Types.ObjectId, ref: "Company" },
+    store_id: { type: Types.ObjectId, ref: "Store" },
     deleted: { type: Boolean, default: false },
     deleted_at: Date,
     deleted_by: { type: Schema.Types.ObjectId, ref: "User" },

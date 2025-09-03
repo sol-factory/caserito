@@ -19,6 +19,7 @@ export const upsert = async ({ data }, user) => {
       category,
       name,
       company_id: user.company._id,
+      store_id: user.company._id,
     };
     if (_id) {
       const prevSubCategory = await CashflowSubCategoryModel.findById(_id);

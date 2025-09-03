@@ -379,10 +379,7 @@ export const revalidate = async () => {
 
 export const getSubCategories = async ({ filterId, searchText }, user) => {
   const matchStage = {
-    $or: [
-      { company_id: { $exists: false } },
-      { company_id: { $eq: toObjectId(user.company._id) } },
-    ],
+    store_id: { $eq: toObjectId(user.store._id) },
   };
   if (filterId) {
     matchStage["category._id"] = toObjectId(filterId);

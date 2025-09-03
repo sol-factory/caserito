@@ -14,7 +14,7 @@ import {
   getSalesSummary,
 } from "@/helpers/mdb";
 import connectDB from "@/lib/connectDB";
-import { CashflowModel } from "@/schemas/cashflow";
+import { CashflowModel, CashflowSubCategoryModel } from "@/schemas/cashflow";
 import ExchangeModel from "@/schemas/exchange";
 import { SaleModel } from "@/schemas/sale";
 import { redirect } from "next/navigation";
@@ -37,6 +37,11 @@ export default async function DashboardPage({ searchParams }) {
     ...getWorkplace(user),
     deleted: false,
   };
+
+  // await CashflowSubCategoryModel.updateMany(
+  //   {},
+  //   { $set: { store_id: user.store._id } }
+  // );
 
   const useAvgAquappRate = !period?.includes("year");
   let avg_aquapp_rate;
