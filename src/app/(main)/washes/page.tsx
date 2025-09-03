@@ -146,7 +146,7 @@ export default async function Sales({ searchParams }) {
   }
 
   if (subCategory || category) {
-    matchStage = { deleted: false };
+    matchStage = { deleted: false, ...getWorkplace(user) };
     if (category) {
       matchStage["category.name"] = category;
     }
