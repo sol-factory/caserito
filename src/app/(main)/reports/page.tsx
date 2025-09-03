@@ -34,7 +34,7 @@ export default async function DashboardPage({ searchParams }) {
 
   const matchStage = {
     ...period_filter,
-    ...getWorkplace(user, true),
+    ...getWorkplace(user),
     deleted: false,
   };
 
